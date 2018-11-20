@@ -10,9 +10,9 @@ namespace Spp {
 		internal bool HasVal;
 		internal Dictionary<string, Instruction> Chain;
 
-		internal static readonly Dictionary<string, Instruction> _root = new Dictionary<string, Instruction> {
-			{ "error", new Instruction(_error, false, true,  null ) },
-			{ "try",   new Instruction(_try,   false, false, _root) }
+		internal static readonly Dictionary<string, Instruction> All = new Dictionary<string, Instruction> {
+			{ "error", new Instruction(_error, false, true,  null) },
+			{ "try",   new Instruction(_try,   false, false, All ) }
 		};
 
 		internal Instruction (Action<VarName, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
