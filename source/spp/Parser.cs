@@ -15,6 +15,10 @@ namespace Spp {
 			_reader = reader;
 		}
 
+		internal Command ParseInstruction () {
+			return _parseInstruction(Instruction.All);
+		}
+
 		private Command _parseInstruction (Dictionary<string, Instruction> pool) {
 			string key;
 			Position pos;
