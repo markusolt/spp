@@ -173,7 +173,7 @@ namespace Spp.IO {
 		}
 
 		private void _updateEndOfReader () {
-			_endOfReader = _reader == null;
+			_endOfReader = _reader.Peek() == -1;
 		}
 	}
 }
