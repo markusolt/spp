@@ -32,7 +32,6 @@ namespace Spp.Values {
 				c = reader.Read();
 				switch (c) {
 					case '\\': {
-						pos = reader.Position;
 						switch (reader.Read()) {
 							case '"': {
 								buffer.Append('"');
@@ -101,11 +100,11 @@ namespace Spp.Values {
 						break;
 					}
 					case '\n': {
-						writer.Write(@"\t");
+						writer.Write(@"\n");
 						break;
 					}
 					case '\t': {
-						writer.Write(@"\n");
+						writer.Write(@"\t");
 						break;
 					}
 					case '\f': {
