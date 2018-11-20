@@ -56,7 +56,7 @@ namespace Spp.IO {
 			_updateEndOfReader();
 
 			if (i == -1) {
-				return (char) 0;
+				return '\n';
 			}
 
 			return (char) i;
