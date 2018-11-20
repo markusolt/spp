@@ -8,7 +8,6 @@ namespace Spp {
 	internal class Compiler {
 		private string _filePath;
 		private Reader _reader;
-		private Parser _parser;
 		private TextWriter _writer;
 		private StringBuilder _buffer;
 
@@ -23,7 +22,6 @@ namespace Spp {
 		internal void Compile () {
 			try {
 				_reader = new Reader(new StreamReader(_filePath), _filePath); // TODO: handle erros
-				_parser = new Parser(_reader);
 				_writer = null;
 
 				while (!_reader.EndOfReader) {
@@ -41,8 +39,9 @@ namespace Spp {
 			switch (_reader.Peek()) {
 				case '#': {
 					_reader.Read();
-					_reader.Skip(" ");
-					_parser.ParseInstruction().Invoke();
+					_reader.Skip(" \t");
+					Command.Parse(_reader, Instruction.All).Invoke();
+					_reader.Read();
 					return;
 				}
 				case '\n': {
