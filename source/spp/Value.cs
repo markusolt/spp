@@ -8,8 +8,6 @@ namespace Spp {
 	internal abstract class Value {
 		private Position _position;
 
-		internal const string StartPattern = Text.StartPattern;
-
 		internal Value (Position position) {
 			_position = position;
 		}
@@ -17,6 +15,10 @@ namespace Spp {
 		internal static Value Parse (Reader reader) {
 			if (reader.Match(Text.StartPattern)) {
 				return Text.Parse(reader);
+			}
+
+			if (reader.Match(Map.StartPattern)) {
+				return Map.Parse(reader);
 			}
 
 			throw new CompileException("Expected value.", reader.Position);
