@@ -4,11 +4,11 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal class Instruction {
-		private Action<VarName, Value, Command> _function;
-		private bool _hasVar;
-		private bool _hasVal;
-		private Dictionary<string, Instruction> _chain;
+	internal struct Instruction {
+		internal Action<VarName, Value, Command> Function;
+		internal bool HasVar;
+		internal bool HasVal;
+		internal Dictionary<string, Instruction> Chain;
 
 		internal static readonly Dictionary<string, Instruction> _root = new Dictionary<string, Instruction> {
 			{ "error", new Instruction(_error, false, true,  null ) },
@@ -16,10 +16,10 @@ namespace Spp {
 		};
 
 		internal Instruction (Action<VarName, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
-			_function = function;
-			_hasVar = hasVar;
-			_hasVal = hasVal;
-			_chain = chain;
+			Function = function;
+			HasVar = hasVar;
+			HasVal = hasVal;
+			Chain = chain;
 		}
 
 		private static void _error (VarName var, Value val, Command chain) {
