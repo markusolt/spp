@@ -166,11 +166,6 @@ namespace Spp.IO {
 		}
 
 		private void _updateEndOfReader () {
-			if (_reader != null && _reader.Peek() == -1) {
-				_reader.Dispose();
-				_reader = null;
-			}
-
 			_endOfReader = _reader == null;
 		}
 	}
