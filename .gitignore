@@ -1,0 +1,5 @@
+*.sublime-project
+*.sublime-workspace
+*.lnk
+source/bin/
+source/obj/
