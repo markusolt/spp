@@ -8,6 +8,7 @@ namespace Spp {
 		private string _name;
 
 		internal const string StartPattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+		internal const string ContinuePattern = StartPattern + "-0123456789";
 
 		internal Variable (Position position, string name) {
 			_position = position;
@@ -19,7 +20,7 @@ namespace Spp {
 				throw new CompileException("Expected variable.", reader.Position);
 			}
 
-			return new Variable(reader.Position, reader.Consume(StartPattern + "-0123456789"));
+			return new Variable(reader.Position, reader.Consume(ContinuePattern));
 		}
 
 		internal Position Position {
