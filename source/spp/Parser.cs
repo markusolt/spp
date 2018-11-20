@@ -8,8 +8,7 @@ namespace Spp {
 		private Reader _reader;
 
 		private const string _defInstrName = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		private const string _defNum = "0123456789";
-		private const string _defVarName = _defInstrName;
+		private const string _defVariable = _defInstrName;
 
 		internal Parser (Reader reader) {
 			_reader = reader;
@@ -23,7 +22,7 @@ namespace Spp {
 			string key;
 			Position pos;
 			Instruction instr;
-			VarName var;
+			Variable var;
 			Value val;
 			Command chain;
 
@@ -37,7 +36,7 @@ namespace Spp {
 
 			var = null;
 			if (instr.HasVar) {
-				var = _parseVarName();
+				var = _parseVariable();
 				_parseHspace();
 			}
 
@@ -76,20 +75,12 @@ namespace Spp {
 			_reader.Skip(" \t");
 		}
 
-		private VarName _parseVarName () {
-			if (!_reader.Match(_defVarName)) {
-				throw new CompileException("Expected variable name.", _reader.Position);
-			}
-
-			return new VarName (_reader.Position, _reader.Consume(_defVarName));
+		private Variable _parseVariable () {
+			return Variable.Parse(_reader);
 		}
 
 		private Value _parseValue () {
-			if (!_reader.Match(_defNum)) {
-				throw new CompileException("Expected value.", _reader.Position);
-			}
-
-			return new Value (_reader.Position, int.Parse(_reader.Consume(_defNum)));
+			return Value.Parse(_reader);
 		}
 	}
 }

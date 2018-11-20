@@ -165,6 +165,13 @@ namespace Spp.IO {
 			return ConsumeUntil(pattern, _buffer).ToString();
 		}
 
+		internal void Assert (char c) {
+			if (Peek() != c) {
+				throw new CompileException("Unexpected " + PrettyPeek() + ".", Position);
+			}
+			Read();
+		}
+
 		private void _updateEndOfReader () {
 			_endOfReader = _reader == null;
 		}

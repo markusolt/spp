@@ -1,21 +1,41 @@
 using System;
+using System.IO;
 using Spp.IO;
+using Spp.Values;
 using Spp;
 
 namespace Spp {
-	internal class Value {
+	internal abstract class Value {
 		private Position _position;
-		private int _value;
 
-		internal Value (Position position, int value) {
+		internal const string StartPattern = Text.StartPattern;
+
+		internal Value (Position position) {
 			_position = position;
-			_value = value;
+		}
+
+		internal static Value Parse (Reader reader) {
+			if (reader.Match(Text.StartPattern)) {
+				return Text.Parse(reader);
+			}
+
+			throw new CompileException("Expected value.", reader.Position);
 		}
 
 		internal Position Position {
 			get {
 				return _position;
 			}
+		}
+
+		internal abstract void Stringify (TextWriter writer);
+
+		public override string ToString () {
+			StringWriter buffer;
+
+			buffer = new StringWriter();
+			Stringify(buffer);
+			return buffer.ToString();
 		}
 	}
 }
