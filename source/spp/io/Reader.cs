@@ -76,7 +76,7 @@ namespace Spp.IO {
 			_updateEndOfReader();
 
 			if (i == -1) {
-				return (char) 0;
+				return '\n';
 			}
 
 			_position = _position.IncrementColumn();
