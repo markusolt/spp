@@ -119,5 +119,9 @@ namespace Spp.Values {
 			}
 			writer.Write('"');
 		}
+
+		public override string ToString () {
+			return _content;
+		}
 	}
 }
