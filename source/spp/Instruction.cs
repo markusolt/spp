@@ -13,8 +13,8 @@ namespace Spp {
 		internal static readonly Dictionary<string, Instruction> All = new Dictionary<string, Instruction>();
 
 		static Instruction () {
-			All.Add("error", new Instruction(_error, false, true,  null));
-			All.Add("try",   new Instruction(_try,   false, false, All));
+			All.Add("warning", new Instruction(_warn, false, true,  null));
+			All.Add("try",     new Instruction(_try,  false, false, All));
 		}
 
 		internal Instruction (Action<Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
@@ -24,8 +24,8 @@ namespace Spp {
 			Chain = chain;
 		}
 
-		private static void _error (Variable var, Value val, Command chain) {
-			throw new CompileException(val.ToString(), val.Position);
+		private static void _warn (Variable var, Value val, Command chain) {
+			Console.WriteLine(val.Position.ToString() + ": Warning: " + val.ToString());
 		}
 
 		private static void _try (Variable var, Value val, Command chain) {
