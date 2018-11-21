@@ -23,6 +23,10 @@ namespace Spp {
 				return Map.Parse(reader);
 			}
 
+			if (reader.Match(Sequence.StartPattern)) {
+				return Sequence.Parse(reader);
+			}
+
 			if (reader.Match(Reserved.StartPattern)) {
 				return Reserved.Parse(reader);
 			}
