@@ -37,6 +37,10 @@ namespace Spp.Values {
 								buffer.Append('"');
 								break;
 							}
+							case '$': {
+								buffer.Append('$');
+								break;
+							}
 							case '\\': {
 								buffer.Append('\\');
 								break;
@@ -72,6 +76,11 @@ namespace Spp.Values {
 					}
 					case '\n': {
 						throw new CompileException("Unclosed quoted string.", pos);
+					}
+					case '$': {
+						Variable.Parse(reader).Find(reader.Compiler.Variables).Stringify(new StringWriter(buffer), true);
+						reader.Assert('$');
+						break;
 					}
 					default: {
 						buffer.Append(c);
