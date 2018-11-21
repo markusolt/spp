@@ -21,6 +21,10 @@ namespace Spp {
 				return Map.Parse(reader);
 			}
 
+			if (reader.Match(Reserved.StartPattern)) {
+				return Reserved.Parse(reader);
+			}
+
 			throw new CompileException("Expected value.", reader.Position);
 		}
 
