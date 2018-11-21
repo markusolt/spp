@@ -75,15 +75,31 @@ namespace Spp.Values {
 			return reader.Consume(Variable.ContinuePattern);
 		}
 
-		internal override Value Get (string key, Position position) {
+		internal override Value Get (Value index) {
+			string key;
+
+			if (!(index is Text)) {
+				throw new CompileException("Expected string index.", index.Position);
+			}
+
+			key = index.ToString();
+
 			if (!_children.ContainsKey(key)) {
-				throw new CompileException("Unkown member name \"" + key + "\".", position);
+				throw new CompileException("Unkown member \"" + key + "\".", index.Position);
 			}
 
 			return _children[key];
 		}
 
-		internal override void Set (string key, Position position, Value value) {
+		internal override void Set (Value index, Value value) {
+			string key;
+
+			if (!(index is Text)) {
+				throw new CompileException("Expected string index.", index.Position);
+			}
+
+			key = index.ToString();
+
 			_children[key] = value;
 		}
 
