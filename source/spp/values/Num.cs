@@ -18,7 +18,7 @@ namespace Spp.Values {
 			return new Num(reader.Position, int.Parse(reader.Consume(StartPattern + "")));
 		}
 
-		internal override void Stringify (TextWriter writer) {
+		internal override void Stringify (TextWriter writer, bool root) {
 			writer.Write(_content.ToString());
 		}
 

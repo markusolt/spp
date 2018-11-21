@@ -83,12 +83,21 @@ namespace Spp.Values {
 			return new Text(rootPos, buffer.ToString());
 		}
 
-		internal override void Stringify (TextWriter writer) {
+		internal override void Stringify (TextWriter writer, bool root) {
+			if (root) {
+				writer.Write(_content);
+				return;
+			}
+
 			writer.Write('"');
 			foreach (char c in _content) {
 				switch (c) {
 					case '"': {
 						writer.Write("\\\"");
+						break;
+					}
+					case '$': {
+						writer.Write(@"\$");
 						break;
 					}
 					case '\\': {
@@ -118,10 +127,6 @@ namespace Spp.Values {
 				}
 			}
 			writer.Write('"');
-		}
-
-		public override string ToString () {
-			return _content;
 		}
 	}
 }

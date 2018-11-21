@@ -67,7 +67,7 @@ namespace Spp {
 			throw new CompileException("Object does not support enumeration.", _position);
 		}
 
-		internal abstract void Stringify (TextWriter writer);
+		internal abstract void Stringify (TextWriter writer, bool root);
 
 		public virtual int ToInt () {
 			throw new CompileException("Expected integer value.", _position);
@@ -77,7 +77,7 @@ namespace Spp {
 			StringWriter buffer;
 
 			buffer = new StringWriter();
-			Stringify(buffer);
+			Stringify(buffer, true);
 			return buffer.ToString();
 		}
 	}

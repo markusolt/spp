@@ -79,7 +79,7 @@ namespace Spp.Values {
 			return _children.GetEnumerator();
 		}
 
-		internal override void Stringify (TextWriter writer) {
+		internal override void Stringify (TextWriter writer, bool root) {
 			bool firstIteration;
 
 			writer.Write('[');
@@ -91,7 +91,7 @@ namespace Spp.Values {
 				} else {
 					firstIteration = false;
 				}
-				entry.Stringify(writer);
+				entry.Stringify(writer, false);
 			}
 			writer.Write(']');
 		}

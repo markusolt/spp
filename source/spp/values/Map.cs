@@ -115,7 +115,7 @@ namespace Spp.Values {
 			return new MapEnumerator(_children);
 		}
 
-		internal override void Stringify (TextWriter writer) {
+		internal override void Stringify (TextWriter writer, bool root) {
 			bool firstIteration;
 
 			writer.Write('{');
@@ -129,7 +129,7 @@ namespace Spp.Values {
 				}
 				writer.Write(entry.Key);
 				writer.Write(": ");
-				entry.Value.Stringify(writer);
+				entry.Value.Stringify(writer, false);
 			}
 			writer.Write('}');
 		}

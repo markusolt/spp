@@ -35,16 +35,12 @@ namespace Spp.Values {
 			return Target.ToEnumerator();
 		}
 
-		internal override void Stringify (TextWriter writer) {
-			Target.Stringify(writer);
+		internal override void Stringify (TextWriter writer, bool root) {
+			Target.Stringify(writer, root);
 		}
 
 		public override int ToInt () {
 			return Target.ToInt();
-		}
-
-		public override string ToString () {
-			return Target.ToString();
 		}
 	}
 }
