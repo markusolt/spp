@@ -34,6 +34,9 @@ namespace Spp {
 			get {
 				return _position;
 			}
+			set {
+				_position = value;
+			}
 		}
 
 		public IEnumerator<Value> GetEnumerator () {

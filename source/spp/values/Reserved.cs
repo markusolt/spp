@@ -22,15 +22,27 @@ namespace Spp.Values {
 		}
 
 		internal override IEnumerator<Value> ToEnumerator () {
-			return _variable.Find(_compiler.Variables).ToEnumerator();
+			Value target;
+
+			target = _variable.Find(_compiler.Variables);
+			target.Position = Position;
+			return target.ToEnumerator();
 		}
 
 		internal override void Stringify (TextWriter writer) {
-			_variable.Find(_compiler.Variables).Stringify(writer);
+			Value target;
+
+			target = _variable.Find(_compiler.Variables);
+			target.Position = Position;
+			target.Stringify(writer);
 		}
 
 		public override string ToString () {
-			return _variable.Find(_compiler.Variables).ToString();
+			Value target;
+
+			target = _variable.Find(_compiler.Variables);
+			target.Position = Position;
+			return target.ToString();
 		}
 	}
 }
