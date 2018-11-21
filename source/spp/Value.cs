@@ -30,6 +30,14 @@ namespace Spp {
 			}
 		}
 
+		internal virtual Value Get (string key, Position position) {
+			throw new CompileException("Object does not support members.", position);
+		}
+
+		internal virtual void Set (string key, Position position, Value value) {
+			throw new CompileException("Object does not support members.", position);
+		}
+
 		internal abstract void Stringify (TextWriter writer);
 
 		public override string ToString () {

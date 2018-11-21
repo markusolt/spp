@@ -10,7 +10,7 @@ namespace Spp.Values {
 	internal class Map : Value {
 		private Dictionary<string, Value> _children;
 
-		internal new const string StartPattern = "{";
+		internal const string StartPattern = "{";
 
 		internal Map (Position position) : base(position) {
 			_children = new Dictionary<string, Value>();
@@ -72,6 +72,18 @@ namespace Spp.Values {
 				throw new CompileException("Expected key.", reader.Position);
 			}
 			return reader.Consume(Variable.ContinuePattern);
+		}
+
+		internal override Value Get (string key, Position position) {
+			if (!_children.ContainsKey(key)) {
+				throw new CompileException("Unkown member name \"" + key + "\".", position);
+			}
+
+			return _children[key];
+		}
+
+		internal override void Set (string key, Position position, Value value) {
+			_children[key] = value;
 		}
 
 		internal override void Stringify (TextWriter writer) {
