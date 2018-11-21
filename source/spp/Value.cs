@@ -23,6 +23,10 @@ namespace Spp {
 				return Sequence.Parse(reader);
 			}
 
+			if (reader.Match(Num.StartPattern)) {
+				return Num.Parse(reader);
+			}
+
 			if (reader.Match(Text.StartPattern)) {
 				return Text.Parse(reader);
 			}
@@ -64,6 +68,10 @@ namespace Spp {
 		}
 
 		internal abstract void Stringify (TextWriter writer);
+
+		public virtual int ToInt () {
+			throw new CompileException("Expected integer value.", _position);
+		}
 
 		public override string ToString () {
 			StringWriter buffer;
