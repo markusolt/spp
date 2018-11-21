@@ -21,6 +21,7 @@ namespace Spp {
 			All.Add("let",     new Instruction(_let,   true,  true,  null));
 			All.Add("for",     new Instruction(_for,   true,  true,  All));
 			All.Add("write",   new Instruction(_write, false, true,  null));
+			All.Add("close",   new Instruction(_close, false, false, null));
 		}
 
 		internal Instruction (Action<Compiler, Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
@@ -53,6 +54,10 @@ namespace Spp {
 
 		private static void _write (Compiler compiler, Variable var, Value val, Command chain) {
 			compiler.Writer = new StreamWriter("demo/" + val.ToString(), false);
+		}
+
+		private static void _close (Compiler compiler, Variable var, Value val, Command chain) {
+			compiler.Writer = null;
 		}
 	}
 }
