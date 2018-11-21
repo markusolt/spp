@@ -52,6 +52,25 @@ namespace Spp.Values {
 			}
 		}
 
+		internal override Value Get (Value index) {
+			int key;
+
+			if (!(index is Num)) {
+				throw new CompileException("Expected integer index.", index.Position);
+			}
+
+			key = index.ToInt();
+
+			if (key < 0) {
+				throw new CompileException("Index must be nonnegative.", index.Position);
+			}
+			if (key >= _children.Count) {
+				throw new CompileException("Index out of range.", index.Position);
+			}
+
+			return _children[key];
+		}
+
 		internal override IEnumerator<Value> ToEnumerator () {
 			return _children.GetEnumerator();
 		}
