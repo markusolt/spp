@@ -15,10 +15,6 @@ namespace Spp {
 		}
 
 		internal static Value Parse (Reader reader) {
-			if (reader.Match(Text.StartPattern)) {
-				return Text.Parse(reader);
-			}
-
 			if (reader.Match(Map.StartPattern)) {
 				return Map.Parse(reader);
 			}
@@ -27,11 +23,15 @@ namespace Spp {
 				return Sequence.Parse(reader);
 			}
 
+			if (reader.Match(Text.StartPattern)) {
+				return Text.Parse(reader);
+			}
+
 			if (reader.Match(Reserved.StartPattern)) {
 				return Reserved.Parse(reader);
 			}
 
-			throw new CompileException("Expected value.", reader.Position);
+			throw new CompileException("Illegal character " + reader.PrettyPeek() + ".", reader.Position);
 		}
 
 		internal Position Position {
