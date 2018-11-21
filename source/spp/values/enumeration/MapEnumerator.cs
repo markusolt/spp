@@ -34,8 +34,8 @@ namespace Spp.Values.Enumeration {
 
 		public bool MoveNext () {
 			if (_enumerator.MoveNext()) {
-				_current.Set("key", default(Position), new Text(default(Position), _enumerator.Current.Key));
-				_current.Set("value", default(Position), _enumerator.Current.Value);
+				_current.Set(new Text(default(Position), "key"), new Text(default(Position), _enumerator.Current.Key));
+				_current.Set(new Text(default(Position), "value"), _enumerator.Current.Value);
 				return true;
 			}
 			return false;

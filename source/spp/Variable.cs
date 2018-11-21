@@ -1,58 +1,67 @@
 using System;
 using Spp.IO;
+using Spp.Values;
 using Spp;
 
 namespace Spp {
 	internal class Variable {
-		private Position _position;
-		private string _name;
+		private Value _name;
 		private Variable _next;
 
 		internal const string StartPattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
 		internal const string ContinuePattern = StartPattern + "-0123456789";
 
-		internal Variable (Position position, string name, Variable next) {
-			_position = position;
+		internal Variable (Value name, Variable next) {
 			_name = name;
 			_next = next;
 		}
 
+		internal Variable Next {
+			get {
+				return _next;
+			}
+			set {
+				_next = value;
+			}
+		}
+
 		internal static Variable Parse (Reader reader) {
-			Position position;
-			string name;
+			Variable root;
+			Variable current;
 
 			if (!reader.Match(StartPattern)) {
 				throw new CompileException("Expected variable.", reader.Position);
 			}
 
-			position = reader.Position;
-			name = reader.Consume(ContinuePattern);
+			root = new Variable(new Text(reader.Position, reader.Consume(ContinuePattern)), null);
+			current = root;
+
+			while (reader.Match("[")) {
+				reader.Read();
+				current.Next = new Variable(Value.Parse(reader), null);
+				current = current.Next;
+				reader.Assert(']');
+			}
 
 			if (reader.Match(".")) {
 				reader.Read();
-				return new Variable(position, name, Variable.Parse(reader));
+				current.Next = Variable.Parse(reader);
 			}
-			return new Variable(position, name, null);
-		}
-
-		internal Position Position {
-			get {
-				return _position;
-			}
+			return root;
 		}
 
 		internal Value Find (Value collection) {
 			if (_next != null) {
-				return _next.Find(collection.Get(_name, _position));
+				return _next.Find(collection.Get(_name));
 			}
-			return collection.Get(_name, _position);
+			return collection.Get(_name);
 		}
 
 		internal void Set (Value collection, Value value) {
 			if (_next != null) {
-				_next.Set(collection.Get(_name, _position), value);
+				_next.Set(collection.Get(_name), value);
 			}
-			collection.Set(_name, _position, value);
+			collection.Set(_name, value);
 		}
 	}
 }

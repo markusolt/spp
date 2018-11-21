@@ -51,12 +51,12 @@ namespace Spp {
 			return ToEnumerator();
 		}
 
-		internal virtual Value Get (string key, Position position) {
-			throw new CompileException("Object does not support members.", position);
+		internal virtual Value Get (Value index) {
+			throw new CompileException("Object is not a collection.", index.Position);
 		}
 
-		internal virtual void Set (string key, Position position, Value value) {
-			throw new CompileException("Object does not support members.", position);
+		internal virtual void Set (Value index, Value value) {
+			throw new CompileException("Object is not a collection.", index.Position);
 		}
 
 		internal virtual IEnumerator<Value> ToEnumerator () {
