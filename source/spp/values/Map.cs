@@ -78,6 +78,10 @@ namespace Spp.Values {
 		internal override Value Get (Value index) {
 			string key;
 
+			if (index is Reserved) {
+				index = (index as Reserved).Target;
+			}
+
 			if (!(index is Text)) {
 				throw new CompileException("Expected string index.", index.Position);
 			}
@@ -93,6 +97,10 @@ namespace Spp.Values {
 
 		internal override void Set (Value index, Value value) {
 			string key;
+
+			if (index is Reserved) {
+				index = (index as Reserved).Target;
+			}
 
 			if (!(index is Text)) {
 				throw new CompileException("Expected string index.", index.Position);
