@@ -17,30 +17,16 @@ namespace Spp.Values {
 			_variable = variable;
 		}
 
-		internal Value Target {
-			get {
-				Value target;
-
-				target = _variable.Find(_compiler.Variables);
-				target.Position = Position;
-				return target;
-			}
-		}
-
 		internal new static Reserved Parse (Reader reader) {
 			return new Reserved(reader.Position, reader.Compiler, Variable.Parse(reader));
 		}
 
-		internal override IEnumerator<Value> ToEnumerator () {
-			return Target.ToEnumerator();
-		}
+		internal override Value Evaluate () {
+			Value target;
 
-		internal override void Stringify (TextWriter writer, bool root) {
-			Target.Stringify(writer, root);
-		}
-
-		public override int ToInt () {
-			return Target.ToInt();
+			target = _variable.Find(_compiler.Variables);
+			target.Position = Position;
+			return target;
 		}
 	}
 }

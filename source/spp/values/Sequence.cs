@@ -55,10 +55,6 @@ namespace Spp.Values {
 		internal override Value Get (Value index) {
 			int key;
 
-			if (index is Reserved) {
-				index = (index as Reserved).Target;
-			}
-
 			if (!(index is Num)) {
 				throw new CompileException("Expected integer index.", index.Position);
 			}

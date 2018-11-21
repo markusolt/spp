@@ -52,16 +52,16 @@ namespace Spp {
 
 		internal Value Find (Value collection) {
 			if (_next != null) {
-				return _next.Find(collection.Get(_name));
+				return _next.Find(collection.Get(_name.Evaluate()));
 			}
-			return collection.Get(_name);
+			return collection.Get(_name.Evaluate());
 		}
 
 		internal void Set (Value collection, Value value) {
 			if (_next != null) {
-				_next.Set(collection.Get(_name), value);
+				_next.Set(collection.Get(_name.Evaluate()), value);
 			}
-			collection.Set(_name, value);
+			collection.Set(_name.Evaluate(), value);
 		}
 	}
 }

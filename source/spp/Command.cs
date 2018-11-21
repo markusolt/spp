@@ -81,6 +81,10 @@ namespace Spp {
 		}
 
 		internal void Invoke (Compiler compiler) {
+			if (_val != null) {
+				_val = _val.Evaluate();
+			}
+
 			_function(compiler, _var, _val, _chain);
 		}
 	}
