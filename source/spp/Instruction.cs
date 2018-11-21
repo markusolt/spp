@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Spp.IO;
 using Spp.Values;
 using Spp.Values.Enumeration;
@@ -15,10 +16,11 @@ namespace Spp {
 		internal static readonly Dictionary<string, Instruction> All = new Dictionary<string, Instruction>();
 
 		static Instruction () {
-			All.Add("warning", new Instruction(_warn, false, true,  null));
-			All.Add("try",     new Instruction(_try,  false, false, All));
-			All.Add("let",     new Instruction(_let,  true,  true,  null));
-			All.Add("for",     new Instruction(_for,  true,  true,  All));
+			All.Add("warning", new Instruction(_warn,  false, true,  null));
+			All.Add("try",     new Instruction(_try,   false, false, All));
+			All.Add("let",     new Instruction(_let,   true,  true,  null));
+			All.Add("for",     new Instruction(_for,   true,  true,  All));
+			All.Add("write",   new Instruction(_write, false, true,  null));
 		}
 
 		internal Instruction (Action<Compiler, Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
@@ -47,6 +49,10 @@ namespace Spp {
 				_let(compiler, var, entry, null);
 				chain.Invoke(compiler);
 			}
+		}
+
+		private static void _write (Compiler compiler, Variable var, Value val, Command chain) {
+			compiler.Writer = new StreamWriter("demo/" + val.ToString(), false);
 		}
 	}
 }

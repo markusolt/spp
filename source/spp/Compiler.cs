@@ -21,6 +21,18 @@ namespace Spp {
 			_buffer = new StringBuilder();
 		}
 
+		internal TextWriter Writer {
+			get {
+				return _writer;
+			}
+			set {
+				if (_writer != null) {
+					_writer.Dispose();
+				}
+				_writer = value;
+			}
+		}
+
 		internal Map Variables {
 			get {
 				return _variables;
@@ -38,10 +50,16 @@ namespace Spp {
 				}
 			} finally {
 				_reader.Dispose();
+				if (_writer != null) {
+					_writer.Dispose();
+					_writer = null;
+				}
 			}
 		}
 
 		private void _compileStep () {
+			char c;
+
 			_buffer.Clear();
 			_reader.Consume(" \t", _buffer);
 
@@ -64,10 +82,25 @@ namespace Spp {
 			}
 
 			_writer.Write(_buffer.ToString());
-			_reader.ConsumeUntil("\\n", _writer);
 
-			_writer.Write(_writer.NewLine);
-			_reader.Read();
+			while (true) {
+				c = _reader.Read();
+				switch (c) {
+					case '\n': {
+						_writer.Write(_writer.NewLine);
+						return;
+					}
+					case '$': {
+						Variable.Parse(_reader).Find(_reader.Compiler.Variables).Stringify(_writer, true);
+						_reader.Assert('$');
+						break;
+					}
+					default: {
+						_writer.Write(c);
+						break;
+					}
+				}
+			}
 		}
 	}
 }
