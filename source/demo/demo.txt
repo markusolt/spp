@@ -1,5 +1,5 @@
-# let firstArray ["a", {foo: "bar"}, ["inner", "second inner"]]
+# write "out.txt"
 
-# let nested [[["a", "b", "c"], ["d"]], [["e"]]]
+# let test "bob"
 
-# for i nested for i i for i i warning i
+hello $test$!
