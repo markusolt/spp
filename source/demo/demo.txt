@@ -1,1 +1,10 @@
-# warning {inner: {greet: "hello", second: " world!"}, "optquotes": "lia lg"}
+# let test {inner: {greet: "hello", second: " world!"}, "optquotes": "lia lg"}
+
+# warning test
+# warning test.inner
+# warning test.inner.greet
+# warning test.inner.second
+# warning test.optquotes
+# warning "lasgljbg"
+# warning "a\tb"
+# warning {foo: "bar"}
