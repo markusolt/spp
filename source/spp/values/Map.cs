@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Spp;
 using Spp.IO;
+using Spp.Values.Enumeration;
 using Spp.Values;
 
 namespace Spp.Values {
@@ -84,6 +85,10 @@ namespace Spp.Values {
 
 		internal override void Set (string key, Position position, Value value) {
 			_children[key] = value;
+		}
+
+		internal override IEnumerator<Value> ToEnumerator () {
+			return new MapEnumerator(_children);
 		}
 
 		internal override void Stringify (TextWriter writer) {

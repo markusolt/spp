@@ -1,11 +1,13 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Spp.IO;
 using Spp.Values;
 using Spp;
 
 namespace Spp {
-	internal abstract class Value {
+	internal abstract class Value : IEnumerable<Value>, IEnumerable {
 		private Position _position;
 
 		internal Value (Position position) {
@@ -34,12 +36,24 @@ namespace Spp {
 			}
 		}
 
+		public IEnumerator<Value> GetEnumerator () {
+			return ToEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator () {
+			return ToEnumerator();
+		}
+
 		internal virtual Value Get (string key, Position position) {
 			throw new CompileException("Object does not support members.", position);
 		}
 
 		internal virtual void Set (string key, Position position, Value value) {
 			throw new CompileException("Object does not support members.", position);
+		}
+
+		internal virtual IEnumerator<Value> ToEnumerator () {
+			throw new CompileException("Object does not support enumeration.", _position);
 		}
 
 		internal abstract void Stringify (TextWriter writer);

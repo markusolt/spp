@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Spp;
 using Spp.IO;
@@ -18,6 +19,10 @@ namespace Spp.Values {
 
 		internal new static Reserved Parse (Reader reader) {
 			return new Reserved(reader.Position, reader.Compiler, Variable.Parse(reader));
+		}
+
+		internal override IEnumerator<Value> ToEnumerator () {
+			return _variable.Find(_compiler.Variables).ToEnumerator();
 		}
 
 		internal override void Stringify (TextWriter writer) {

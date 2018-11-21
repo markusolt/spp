@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Spp.IO;
+using Spp.Values;
+using Spp.Values.Enumeration;
 using Spp;
 
 namespace Spp {
@@ -16,6 +18,7 @@ namespace Spp {
 			All.Add("warning", new Instruction(_warn, false, true,  null));
 			All.Add("try",     new Instruction(_try,  false, false, All));
 			All.Add("let",     new Instruction(_let,  true,  true,  null));
+			All.Add("for",     new Instruction(_for,  true,  true,  All));
 		}
 
 		internal Instruction (Action<Compiler, Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
@@ -37,6 +40,13 @@ namespace Spp {
 
 		private static void _let (Compiler compiler, Variable var, Value val, Command chain) {
 			var.Set(compiler.Variables, val);
+		}
+
+		private static void _for (Compiler compiler, Variable var, Value val, Command chain) {
+			foreach (Value entry in val) {
+				_let(compiler, var, entry, null);
+				chain.Invoke(compiler);
+			}
 		}
 	}
 }
