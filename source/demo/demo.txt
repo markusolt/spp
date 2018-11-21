@@ -1,2 +1,5 @@
-# let obj "kalngln"
-# for i obj warning i
+# let firstArray ["a", {foo: "bar"}, ["inner", "second inner"]]
+
+# let nested [[["a", "b", "c"], ["d"]], [["e"]]]
+
+# for i nested for i i for i i warning i
