@@ -9,7 +9,7 @@ namespace Spp.Values {
 	internal class Text : Value {
 		private string _content;
 
-		internal new const string StartPattern = "\"";
+		internal const string StartPattern = "\"";
 
 		internal Text (Position position, string content) : base(position) {
 			_content = content;
