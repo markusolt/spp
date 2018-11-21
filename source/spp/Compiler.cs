@@ -40,7 +40,7 @@ namespace Spp {
 				case '#': {
 					_reader.Read();
 					_reader.Skip(" \t");
-					Command.Parse(_reader, Instruction.All).Invoke();
+					Command.Parse(_reader, Instruction.All).Invoke(this);
 					_reader.Read();
 					return;
 				}

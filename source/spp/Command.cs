@@ -5,7 +5,7 @@ using Spp;
 
 namespace Spp {
 	internal class Command {
-		private Action<Variable, Value, Command> _function;
+		private Action<Compiler, Variable, Value, Command> _function;
 		private Position _position;
 		private Variable _var;
 		private Value _val;
@@ -13,7 +13,7 @@ namespace Spp {
 
 		internal const string StartPattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-		internal Command (Action<Variable, Value, Command> function, Position position, Variable var, Value val, Command chain) {
+		internal Command (Action<Compiler, Variable, Value, Command> function, Position position, Variable var, Value val, Command chain) {
 			_function = function;
 			_position = position;
 			_var = var;
@@ -80,8 +80,8 @@ namespace Spp {
 			reader.Skip(" \t");
 		}
 
-		internal void Invoke () {
-			_function(_var, _val, _chain);
+		internal void Invoke (Compiler compiler) {
+			_function(compiler, _var, _val, _chain);
 		}
 	}
 }

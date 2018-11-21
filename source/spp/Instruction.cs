@@ -5,7 +5,7 @@ using Spp;
 
 namespace Spp {
 	internal struct Instruction {
-		internal Action<Variable, Value, Command> Function;
+		internal Action<Compiler, Variable, Value, Command> Function;
 		internal bool HasVar;
 		internal bool HasVal;
 		internal Dictionary<string, Instruction> Chain;
@@ -15,23 +15,28 @@ namespace Spp {
 		static Instruction () {
 			All.Add("warning", new Instruction(_warn, false, true,  null));
 			All.Add("try",     new Instruction(_try,  false, false, All));
+			All.Add("let",     new Instruction(_let,  true,  true,  null));
 		}
 
-		internal Instruction (Action<Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
+		internal Instruction (Action<Compiler, Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
 			Function = function;
 			HasVar = hasVar;
 			HasVal = hasVal;
 			Chain = chain;
 		}
 
-		private static void _warn (Variable var, Value val, Command chain) {
+		private static void _warn (Compiler compiler, Variable var, Value val, Command chain) {
 			Console.WriteLine(val.Position.ToString() + ": Warning: " + val.ToString());
 		}
 
-		private static void _try (Variable var, Value val, Command chain) {
+		private static void _try (Compiler compiler, Variable var, Value val, Command chain) {
 			try {
-				chain.Invoke();
+				chain.Invoke(compiler);
 			} catch (CompileException) {}
+		}
+
+		private static void _let (Compiler compiler, Variable var, Value val, Command chain) {
+			var.Set(compiler.Variables, val);
 		}
 	}
 }
