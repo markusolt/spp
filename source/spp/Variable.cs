@@ -20,6 +20,10 @@ namespace Spp {
 			Variable root;
 			Variable current;
 
+			if (!reader.Match(_pattern)) {
+				throw new CompileException("Expected a variable.", reader.Position);
+			}
+
 			root = new Variable(reader.Position, new Text(reader.Position, reader.Consume(_pattern)), null);
 			current = root;
 

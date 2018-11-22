@@ -46,6 +46,10 @@ namespace Spp.Types {
 			List<Value> children;
 			Position pos;
 
+			if (!reader.Match("[")) {
+				throw new CompileException("Expected a list.", reader.Position);
+			}
+
 			pos = reader.Position;
 			reader.Assert('[');
 			children = new List<Value>();

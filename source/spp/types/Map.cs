@@ -35,6 +35,10 @@ namespace Spp.Types {
 			string key;
 			Position pos;
 
+			if (!reader.Match("{")) {
+				throw new CompileException("Expected a map.", reader.Position);
+			}
+
 			pos = reader.Position;
 			reader.Assert('{');
 			children = new Dictionary<string, Value>();

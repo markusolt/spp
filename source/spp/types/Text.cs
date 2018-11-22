@@ -19,6 +19,10 @@ namespace Spp.Types {
 			Position rootPos;
 			Position pos;
 
+			if (!reader.Match("\"")) {
+				throw new CompileException("Expected a string.", reader.Position);
+			}
+
 			rootPos = reader.Position;
 			reader.Assert('"');
 
