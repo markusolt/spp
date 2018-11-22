@@ -70,6 +70,10 @@ namespace Spp {
 			throw new CompileException("Expected an integer value.", _position);
 		}
 
+		internal virtual IEnumerator<Value> AsEnumerator () {
+			throw new CompileException("Expected a collection.", _position);
+		}
+
 		internal virtual Value Evaluate (Value container, Value node) {
 			return this;
 		}
