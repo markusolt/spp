@@ -100,7 +100,11 @@ namespace Spp.IO {
 				return "[end]";
 			}
 
-			switch (Peek()) {
+			return Pretty(Peek());
+		}
+
+		internal string Pretty (char c) {
+			switch (c) {
 				case '\0': {
 					return @"[\0]";
 				}
@@ -114,7 +118,7 @@ namespace Spp.IO {
 					return @"[\f]";
 				}
 				default: {
-					return ("\"" + Peek() + "\"");
+					return c.ToString();
 				}
 			}
 		}
@@ -175,7 +179,7 @@ namespace Spp.IO {
 
 		internal void Assert (char c) {
 			if (Peek() != c) {
-				throw new CompileException("Unexpected " + PrettyPeek() + ".", Position);
+				throw new CompileException("Expected " + Pretty(c) + ".", Position);
 			}
 			Read();
 		}

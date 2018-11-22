@@ -1,44 +1,69 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Spp;
 using Spp.IO;
-using Spp.Values.Enumeration;
-using Spp.Values;
+using Spp.Types;
 
-namespace Spp.Values {
+namespace Spp.Types {
 	internal class Sequence : Value {
 		private List<Value> _children;
 
-		internal const string StartPattern = "[";
+		internal Sequence (Position position, List<Value> children) : base(position) {
+			_children = children;
+		}
 
-		internal Sequence (Position position) : base(position) {
-			_children = new List<Value>();
+		internal override Value this[Value obj] {
+			get {
+				int index = obj.AsInt();
+
+				if (index < 0) {
+					throw new CompileException("Indices must be nonnegative.", obj.Position);
+				}
+
+				if (index >= _children.Count) {
+					throw new CompileException("Index out of range.", obj.Position);
+				}
+
+				return _children[index];
+			}
+			set {
+				int index = obj.AsInt();
+
+				if (index < 0) {
+					throw new CompileException("Indices must be nonnegative.", obj.Position);
+				}
+
+				if (index >= _children.Count) {
+					throw new CompileException("Index out of range.", obj.Position);
+				}
+
+				_children[index] = value;
+			}
 		}
 
 		internal new static Sequence Parse (Reader reader) {
-			Sequence sequence;
+			List<Value> children;
 			Position pos;
 
 			pos = reader.Position;
 			reader.Assert('[');
-			sequence = new Sequence(pos);
+			children = new List<Value>();
 			reader.Skip(" \t\n");
 
 			if (reader.Match("]")) {
 				reader.Read();
-				return sequence;
+				return new Sequence(pos, children);
 			}
 
 			while (true) {
-				sequence.Add(Value.Parse(reader));
+				children.Add(Value.Parse(reader));
 
 				reader.Skip(" \t\n");
 				switch (reader.Peek()) {
 					case ']': {
 						reader.Read();
-						return sequence;
+						return new Sequence(pos, children);
 					}
 					case ',': {
 						reader.Read();
@@ -50,29 +75,6 @@ namespace Spp.Values {
 					}
 				}
 			}
-		}
-
-		internal override Value Get (Value index) {
-			int key;
-
-			if (!(index is Num)) {
-				throw new CompileException("Expected integer index.", index.Position);
-			}
-
-			key = index.ToInt();
-
-			if (key < 0) {
-				throw new CompileException("Index must be nonnegative.", index.Position);
-			}
-			if (key >= _children.Count) {
-				throw new CompileException("Index out of range.", index.Position);
-			}
-
-			return _children[key];
-		}
-
-		internal override IEnumerator<Value> ToEnumerator () {
-			return _children.GetEnumerator();
 		}
 
 		internal override void Stringify (TextWriter writer, bool root) {
@@ -90,10 +92,6 @@ namespace Spp.Values {
 				entry.Stringify(writer, false);
 			}
 			writer.Write(']');
-		}
-
-		internal void Add (Value value) {
-			_children.Add(value);
 		}
 	}
 }

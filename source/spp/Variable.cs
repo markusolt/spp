@@ -1,67 +1,70 @@
 using System;
+using System.IO;
 using Spp.IO;
-using Spp.Values;
+using Spp.Types;
 using Spp;
 
 namespace Spp {
-	internal class Variable {
+	internal class Variable : Value {
 		private Value _name;
 		private Variable _next;
 
-		internal const string StartPattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
-		internal const string ContinuePattern = StartPattern + "-0123456789";
+		private const string _pattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
 
-		internal Variable (Value name, Variable next) {
+		internal Variable (Position position, Value name, Variable next) : base(position) {
 			_name = name;
 			_next = next;
 		}
 
-		internal Variable Next {
-			get {
-				return _next;
-			}
-			set {
-				_next = value;
-			}
-		}
-
-		internal static Variable Parse (Reader reader) {
+		internal new static Variable Parse (Reader reader) {
 			Variable root;
 			Variable current;
 
-			if (!reader.Match(StartPattern)) {
-				throw new CompileException("Expected variable.", reader.Position);
-			}
-
-			root = new Variable(new Text(reader.Position, reader.Consume(ContinuePattern)), null);
+			root = new Variable(reader.Position, new Text(reader.Position, reader.Consume(_pattern)), null);
 			current = root;
 
 			while (reader.Match("[")) {
 				reader.Read();
-				current.Next = new Variable(Value.Parse(reader), null);
-				current = current.Next;
+				current._next = new Variable(reader.Position, Value.Parse(reader), null);
+				current = current._next;
 				reader.Assert(']');
 			}
 
 			if (reader.Match(".")) {
 				reader.Read();
-				current.Next = Variable.Parse(reader);
+				current._next = Variable.Parse(reader);
 			}
 			return root;
 		}
 
-		internal Value Find (Value collection) {
-			if (_next != null) {
-				return _next.Find(collection.Get(_name.Evaluate()));
-			}
-			return collection.Get(_name.Evaluate());
+		internal override void Stringify (TextWriter writer, bool root) {
+			throw new NotSupportedException("Variables should be evaluated before stringify.");
 		}
 
-		internal void Set (Value collection, Value value) {
+		internal override Value Evaluate (Value root, Value node) { // TODO: simplify arguments
+			Value val;
+
 			if (_next != null) {
-				_next.Set(collection.Get(_name.Evaluate()), value);
+				val = _next.Evaluate(root, node[_name.Evaluate(root, root)]);
+				val.Position = Position;
+				return val;
 			}
-			collection.Set(_name.Evaluate(), value);
+
+			val = node[_name.Evaluate(root, root)];
+			val.Position = Position;
+			return val;
+		}
+
+		internal void Set (Value root, Value value) {
+			_set(root, root, value);
+		}
+
+		private void _set (Value root, Value node, Value value) {
+			if (_next != null) {
+				_next._set(root, node[_name.Evaluate(root, root)], value);
+				return;
+			}
+			node[_name.Evaluate(root, root)] = value;
 		}
 	}
 }

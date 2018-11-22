@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text;
 using Spp.IO;
-using Spp.Values;
 using Spp;
 
 namespace Spp {
@@ -11,7 +10,7 @@ namespace Spp {
 		private Reader _reader;
 		private TextWriter _writer;
 		private StringBuilder _buffer;
-		private Map _variables;
+		private Value _memory;
 
 		internal Compiler (string filePath) : this() {
 			_filePath = Path.GetFullPath(filePath); // TODO: handle errors
@@ -33,9 +32,9 @@ namespace Spp {
 			}
 		}
 
-		internal Map Variables {
+		internal Value Variables {
 			get {
-				return _variables;
+				return _memory;
 			}
 		}
 
@@ -43,7 +42,7 @@ namespace Spp {
 			try {
 				_reader = new Reader(new StreamReader(_filePath), _filePath, this); // TODO: handle erros
 				_writer = null;
-				_variables = new Map(_reader.Position);
+				_memory = Value.NewMap();
 
 				while (!_reader.EndOfReader) {
 					_compileStep();
@@ -91,7 +90,7 @@ namespace Spp {
 						return;
 					}
 					case '$': {
-						Variable.Parse(_reader).Find(_reader.Compiler.Variables).Stringify(_writer, true);
+						//Variable.Parse(_reader).Find(_reader.Compiler.Variables).Stringify(_writer, true);
 						_reader.Assert('$');
 						break;
 					}

@@ -1,38 +1,47 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Spp.IO;
-using Spp.Values;
+using Spp.Types;
 using Spp;
 
 namespace Spp {
-	internal abstract class Value : IEnumerable<Value>, IEnumerable {
+	internal abstract class Value {
 		private Position _position;
+
+		private static Parser<Value>[] _parsers;
+
+		static Value () {
+			_parsers = new Parser<Value>[] {
+				new Parser<Value>("{", Map.Parse),
+				new Parser<Value>("0123456789", Num.Parse),
+				new Parser<Value>("[", Sequence.Parse),
+				new Parser<Value>("\"", Text.Parse),
+				new Parser<Value>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", Variable.Parse),
+			};
+		}
 
 		internal Value (Position position) {
 			_position = position;
 		}
 
+		internal virtual Value this[Value key] {
+			get {
+				throw new CompileException("Object is not a collection.", _position);
+			}
+			set {
+				throw new CompileException("Object is not a collection.", _position);
+			}
+		}
+
 		internal static Value Parse (Reader reader) {
-			if (reader.Match(Map.StartPattern)) {
-				return Map.Parse(reader);
-			}
+			char c;
 
-			if (reader.Match(Sequence.StartPattern)) {
-				return Sequence.Parse(reader);
-			}
-
-			if (reader.Match(Num.StartPattern)) {
-				return Num.Parse(reader);
-			}
-
-			if (reader.Match(Text.StartPattern)) {
-				return Text.Parse(reader);
-			}
-
-			if (reader.Match(Reserved.StartPattern)) {
-				return Reserved.Parse(reader);
+			c = reader.Peek();
+			foreach (Parser<Value> p in _parsers) {
+				if (p.Match(c)) {
+					return p.Parse(reader);
+				}
 			}
 
 			throw new CompileException("Illegal character " + reader.PrettyPeek() + ".", reader.Position);
@@ -47,36 +56,22 @@ namespace Spp {
 			}
 		}
 
-		public IEnumerator<Value> GetEnumerator () {
-			return ToEnumerator();
+		internal static Value NewMap () {
+			return new Map(default(Position), new Dictionary<string, Value>());
 		}
 
-		IEnumerator IEnumerable.GetEnumerator () {
-			return ToEnumerator();
+		internal abstract void Stringify (TextWriter writer, bool root);
+
+		internal virtual string AsString () {
+			throw new CompileException("Expected a string value.", _position);
 		}
 
-		internal virtual Value Get (Value index) {
-			throw new CompileException("Object is not a collection.", index.Position);
+		internal virtual int AsInt () {
+			throw new CompileException("Expected an integer value.", _position);
 		}
 
-		internal virtual void Set (Value index, Value value) {
-			throw new CompileException("Object is not a collection.", index.Position);
-		}
-
-		internal virtual IEnumerator<Value> ToEnumerator () {
-			throw new CompileException("Object does not support enumeration.", _position);
-		}
-
-		internal virtual Value Evaluate () {
+		internal virtual Value Evaluate (Value container, Value node) {
 			return this;
-		}
-
-		internal virtual void Stringify (TextWriter writer, bool root) {
-			writer.Write("null");
-		}
-
-		public virtual int ToInt () {
-			throw new CompileException("Expected integer value.", _position);
 		}
 
 		public override string ToString () {

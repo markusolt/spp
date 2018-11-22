@@ -3,13 +3,11 @@ using System.IO;
 using System.Text;
 using Spp;
 using Spp.IO;
-using Spp.Values;
+using Spp.Types;
 
-namespace Spp.Values {
+namespace Spp.Types {
 	internal class Text : Value {
 		private string _content;
-
-		internal const string StartPattern = "\"";
 
 		internal Text (Position position, string content) : base(position) {
 			_content = content;
@@ -78,7 +76,7 @@ namespace Spp.Values {
 						throw new CompileException("Unclosed quoted string.", pos);
 					}
 					case '$': {
-						Variable.Parse(reader).Find(reader.Compiler.Variables).Stringify(new StringWriter(buffer), true);
+						//Variable.Parse(reader).Find(reader.Compiler.Variables).Stringify(new StringWriter(buffer), true);
 						reader.Assert('$');
 						break;
 					}
@@ -136,6 +134,10 @@ namespace Spp.Values {
 				}
 			}
 			writer.Write('"');
+		}
+
+		internal override string AsString () {
+			return _content;
 		}
 	}
 }

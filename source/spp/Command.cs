@@ -5,29 +5,21 @@ using Spp;
 
 namespace Spp {
 	internal class Command {
-		private Action<Compiler, Variable, Value, Command> _function;
 		private Position _position;
+		private Action<Compiler, Variable, Value, Command> _function;
 		private Variable _var;
 		private Value _val;
 		private Command _chain;
 
-		internal const string StartPattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-		internal Command (Action<Compiler, Variable, Value, Command> function, Position position, Variable var, Value val, Command chain) {
-			_function = function;
+		internal Command (Position position, Action<Compiler, Variable, Value, Command> function, Variable var, Value val, Command chain) {
 			_position = position;
+			_function = function;
 			_var = var;
 			_val = val;
 			_chain = chain;
 		}
 
-		internal Position Position {
-			get {
-				return _position;
-			}
-		}
-
-		internal static Command Parse (Reader reader, Dictionary<string, Instruction> pool) {
+		internal static Command Parse (Reader reader, Dictionary<string, Instruction> instructions) {
 			string key;
 			Position pos;
 			Instruction instr;
@@ -35,16 +27,16 @@ namespace Spp {
 			Value val;
 			Command chain;
 
-			if (!reader.Match(StartPattern)) {
+			if (!reader.Match("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
 				throw new CompileException("Expected instruction.", reader.Position);
 			}
 
 			pos = reader.Position;
-			key = reader.Consume(StartPattern + "");
-			if (!pool.ContainsKey(key)) {
+			key = reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+			if (!instructions.ContainsKey(key)) {
 				throw new CompileException("Unkown instruction \"" + key + "\".", pos);
 			}
-			instr = pool[key];
+			instr = instructions[key];
 			_space(reader);
 
 			var = null;
@@ -69,7 +61,7 @@ namespace Spp {
 				throw new CompileException("Expected end of instruction.", reader.Position);
 			}
 
-			return new Command(instr.Function, pos, var, val, chain);
+			return new Command(pos, instr.Function, var, val, chain);
 		}
 
 		private static void _space (Reader reader) {
@@ -82,7 +74,7 @@ namespace Spp {
 
 		internal void Invoke (Compiler compiler) {
 			if (_val != null) {
-				_val = _val.Evaluate();
+				_val = _val.Evaluate(compiler.Variables, compiler.Variables);
 			}
 
 			_function(compiler, _var, _val, _chain);

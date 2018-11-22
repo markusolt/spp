@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Spp.IO;
-using Spp.Values;
-using Spp.Values.Enumeration;
 using Spp;
 
 namespace Spp {
@@ -46,10 +44,10 @@ namespace Spp {
 		}
 
 		private static void _for (Compiler compiler, Variable var, Value val, Command chain) {
-			foreach (Value entry in val) {
+			/*foreach (Value entry in val) {
 				_let(compiler, var, entry, null);
 				chain.Invoke(compiler);
-			}
+			}*/
 		}
 
 		private static void _write (Compiler compiler, Variable var, Value val, Command chain) {
