@@ -93,5 +93,9 @@ namespace Spp.Types {
 			}
 			writer.Write(']');
 		}
+
+		internal override IEnumerator<Value> AsEnumerator () {
+			return _children.GetEnumerator();
+		}
 	}
 }

@@ -44,10 +44,13 @@ namespace Spp {
 		}
 
 		private static void _for (Compiler compiler, Variable var, Value val, Command chain) {
-			/*foreach (Value entry in val) {
-				_let(compiler, var, entry, null);
+			IEnumerator<Value> enumerator = val.AsEnumerator();
+			enumerator.Reset();
+
+			while (enumerator.MoveNext()) {
+				_let(compiler, var, enumerator.Current, null);
 				chain.Invoke(compiler);
-			}*/
+			}
 		}
 
 		private static void _write (Compiler compiler, Variable var, Value val, Command chain) {
