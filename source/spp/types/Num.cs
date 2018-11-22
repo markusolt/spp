@@ -14,8 +14,26 @@ namespace Spp.Types {
 			_content = content;
 		}
 
-		internal new static Num Parse (Reader reader) {
-			return new Num(reader.Position, int.Parse(reader.Consume(_pattern)));
+		internal new static Value Parse (Reader reader) {
+			int first;
+			Position pos;
+
+			if (!reader.Match(_pattern)) {
+				throw new CompileException("Expected an integer.", reader.Position);
+			}
+
+			pos = reader.Position;
+			first = int.Parse(reader.Consume(_pattern));
+			if (reader.Match(".")) {
+				reader.Assert('.');
+				reader.Assert('.');
+				if (!reader.Match(_pattern)) {
+					throw new CompileException("Expected an integer.", reader.Position);
+				}
+				return new Range(pos, first, int.Parse(reader.Consume(_pattern)));
+			}
+
+			return new Num(pos, first);
 		}
 
 		internal override void Stringify (TextWriter writer, bool root) {
