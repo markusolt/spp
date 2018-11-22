@@ -7,14 +7,12 @@ namespace Spp.IO {
 	internal class Reader : IDisposable {
 		private TextReader _reader;
 		private Position _position;
-		private Compiler _compiler;
 		private StringBuilder _buffer;
 		private bool _endOfReader;
 
-		internal Reader (TextReader reader, string fileName, Compiler compiler) : this() {
+		internal Reader (TextReader reader, string fileName) : this() {
 			_reader = reader;
 			_position = new Position(fileName);
-			_compiler = compiler;
 
 			_updateEndOfReader();
 		}
@@ -27,12 +25,6 @@ namespace Spp.IO {
 		internal Position Position {
 			get {
 				return _position;
-			}
-		}
-
-		internal Compiler Compiler {
-			get {
-				return _compiler;
 			}
 		}
 

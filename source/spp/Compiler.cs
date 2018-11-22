@@ -40,7 +40,7 @@ namespace Spp {
 
 		internal void Compile () {
 			try {
-				_reader = new Reader(new StreamReader(_filePath), _filePath, this); // TODO: handle erros
+				_reader = new Reader(new StreamReader(_filePath), _filePath); // TODO: handle erros
 				_writer = null;
 				_memory = Value.NewMap();
 
