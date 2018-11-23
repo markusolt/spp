@@ -17,7 +17,11 @@ namespace Spp {
 			_next = next;
 		}
 
-		internal static Variable Parse (Reader reader, bool isRooted) {
+		internal static Variable Parse (Reader reader) {
+			return _parse(reader, true);
+		}
+
+		private static Variable _parse (Reader reader, bool isRooted) {
 			Variable root;
 			Variable current;
 			Position pos;
@@ -44,7 +48,7 @@ namespace Spp {
 
 			if (reader.Match(".")) {
 				reader.Read();
-				current._next = Variable.Parse(reader, false);
+				current._next = Variable._parse(reader, false);
 			}
 			return root;
 		}
