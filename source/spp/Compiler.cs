@@ -83,7 +83,7 @@ namespace Spp {
 				case '#': {
 					reader.Read();
 					reader.Skip(" \t");
-					Command.Parse(reader, Instruction.All).Invoke(this);
+					Command.Parse(reader, Instruction.Root).Invoke(this);
 					reader.Read();
 					return;
 				}

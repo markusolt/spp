@@ -11,19 +11,19 @@ namespace Spp {
 		internal bool HasVal;
 		internal Dictionary<string, Instruction> Chain;
 
-		internal static readonly Dictionary<string, Instruction> All = new Dictionary<string, Instruction>();
+		internal static readonly Dictionary<string, Instruction> Root = new Dictionary<string, Instruction>();
 
 		static Instruction () {
-			All.Add("warning",  new Instruction(_warn,     false, true,  null));
-			All.Add("error",    new Instruction(_error,    false, true,  null));
-			All.Add("try",      new Instruction(_try,      false, false, All));
-			All.Add("let",      new Instruction(_let,      true,  true,  null));
-			All.Add("input",    new Instruction(_input,    false, true,  null));
-			All.Add("cdinput",  new Instruction(_cdinput,  false, true,  null));
-			All.Add("output",   new Instruction(_output,   false, true,  null));
-			All.Add("cdoutput", new Instruction(_cdoutput, false, true,  null));
-			All.Add("close",    new Instruction(_close,    false, false, null));
-			All.Add("for",      new Instruction(_for,      true,  true,  All));
+			Root.Add("warning",  new Instruction(_warn,     false, true,  null));
+			Root.Add("error",    new Instruction(_error,    false, true,  null));
+			Root.Add("try",      new Instruction(_try,      false, false, Root));
+			Root.Add("let",      new Instruction(_let,      true,  true,  null));
+			Root.Add("input",    new Instruction(_input,    false, true,  null));
+			Root.Add("cdinput",  new Instruction(_cdinput,  false, true,  null));
+			Root.Add("output",   new Instruction(_output,   false, true,  null));
+			Root.Add("cdoutput", new Instruction(_cdoutput, false, true,  null));
+			Root.Add("close",    new Instruction(_close,    false, false, null));
+			Root.Add("for",      new Instruction(_for,      true,  true,  Root));
 		}
 
 		internal Instruction (Action<Compiler, Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {

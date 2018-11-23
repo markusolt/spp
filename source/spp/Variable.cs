@@ -11,9 +11,6 @@ namespace Spp {
 		private Variable _next;
 
 		private const string _pattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
-		private static readonly HashSet<string> _blacklist = new HashSet<string> {
-			"warning", "error", "try", "let", "input", "cdinput", "output", "cdoutput", "close", "for"
-		};
 
 		internal Variable (Position position, Value name, Variable next) : base(position) {
 			_name = name;
@@ -32,7 +29,7 @@ namespace Spp {
 
 			pos = reader.Position;
 			key = reader.Consume(_pattern);
-			if (isRooted && _blacklist.Contains(key)) {
+			if (isRooted && Instruction.Root.ContainsKey(key)) {
 				throw new CompileException("Expected a variable.", pos);
 			}
 			root = new Variable(pos, new Text(pos, key), null);
