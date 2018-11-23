@@ -18,6 +18,7 @@ namespace Spp {
 				new Parser<Value>("[", Sequence.Parse),
 				new Parser<Value>("\"", Text.Parse),
 				new Parser<Value>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", Variable.Parse),
+				new Parser<Value>(":", Auto.Parse),
 			};
 		}
 
