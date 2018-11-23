@@ -18,7 +18,7 @@ namespace Spp.Types {
 				string key = obj.AsString();
 
 				if (!_children.ContainsKey(key)) {
-					throw new CompileException("Unkown member \"" + key + ".", obj.Position);
+					throw new CompileException("Unkown member \"" + key + "\".", obj.Position);
 				}
 
 				return _children[key];
