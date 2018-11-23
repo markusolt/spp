@@ -5,18 +5,12 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal class Compiler {
-		private string _filePath;
-		private Reader _reader;
-		private TextWriter _writer;
+	internal class Compiler : IDisposable {
 		private StringBuilder _buffer;
+		private TextWriter _writer;
 		private Value _memory;
 
-		internal Compiler (string filePath) : this() {
-			_filePath = Path.GetFullPath(filePath); // TODO: handle errors
-		}
-
-		private Compiler () {
+		internal Compiler () {
 			_buffer = new StringBuilder();
 		}
 
@@ -38,17 +32,20 @@ namespace Spp {
 			}
 		}
 
-		internal void Compile () {
-			try {
-				_reader = new Reader(new StreamReader(_filePath), _filePath); // TODO: handle erros
+		internal void Reset () {
+			if (_writer != null) {
+				_writer.Dispose();
 				_writer = null;
-				_memory = Value.NewMap();
+			}
+			_memory = Value.NewMap();
+		}
 
-				while (!_reader.EndOfReader) {
-					_compileStep();
-				}
+		internal void Compile (string filePath) {
+			Reset();
+
+			try {
+				CompileInsert(filePath);
 			} finally {
-				_reader.Dispose();
 				if (_writer != null) {
 					_writer.Dispose();
 					_writer = null;
@@ -56,42 +53,57 @@ namespace Spp {
 			}
 		}
 
-		private void _compileStep () {
+		internal void CompileInsert (string filePath) {
+			Reader reader;
+
+			filePath = Path.GetFullPath(filePath); // TODO: handle erros
+			reader = new Reader(new StreamReader(filePath), filePath); // TODO: handle erros
+
+			try {
+				while (!reader.EndOfReader) {
+					_compileLine(reader);
+				}
+			} finally {
+				reader.Dispose();
+			}
+		}
+
+		private void _compileLine (Reader reader) {
 			char c;
 
 			_buffer.Clear();
-			_reader.Consume(" \t", _buffer);
+			reader.Consume(" \t", _buffer);
 
-			switch (_reader.Peek()) {
+			switch (reader.Peek()) {
 				case '#': {
-					_reader.Read();
-					_reader.Skip(" \t");
-					Command.Parse(_reader, Instruction.All).Invoke(this);
-					_reader.Read();
+					reader.Read();
+					reader.Skip(" \t");
+					Command.Parse(reader, Instruction.All).Invoke(this);
+					reader.Read();
 					return;
 				}
 				case '\n': {
-					_reader.Read();
+					reader.Read();
 					return;
 				}
 			}
 
 			if (_writer == null) {
-				throw new CompileException("No open output file.", _reader.Position);
+				throw new CompileException("No open output file.", reader.Position);
 			}
 
 			_writer.Write(_buffer.ToString());
 
 			while (true) {
-				c = _reader.Read();
+				c = reader.Read();
 				switch (c) {
 					case '\n': {
 						_writer.Write(_writer.NewLine);
 						return;
 					}
 					case '$': {
-						//Variable.Parse(_reader).Find(_reader.Compiler.Variables).Stringify(_writer, true);
-						_reader.Assert('$');
+						//Variable.Parse(reader).Find(reader.Compiler.Variables).Stringify(_writer, true);
+						reader.Assert('$');
 						break;
 					}
 					default: {
@@ -100,6 +112,14 @@ namespace Spp {
 					}
 				}
 			}
+		}
+
+		public void Dispose () {
+			if (_writer != null) {
+				_writer.Dispose();
+				_writer = null;
+			}
+			_memory = null;
 		}
 	}
 }

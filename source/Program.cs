@@ -11,10 +11,10 @@ namespace Spp {
       }
 
       if (args.Length == 1) {
-        Compiler c = new Compiler(args[0]);
+        Compiler c = new Compiler();
 
         try {
-          c.Compile();
+          c.Compile(args[0]);
         } catch (CompileException e) {
           Console.WriteLine(e.ToString());
           return 1;
