@@ -56,7 +56,7 @@ namespace Spp {
 
 			val = node[_name.Evaluate(root, root)];
 			val.Position = Position;
-			return val;
+			return val.Copy();
 		}
 
 		internal void Set (Value root, Value value) {

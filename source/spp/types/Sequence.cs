@@ -98,6 +98,10 @@ namespace Spp.Types {
 			writer.Write(']');
 		}
 
+		internal override Value Copy () {
+			return new Sequence(Position, new List<Value>(_children));
+		}
+
 		internal override IEnumerator<Value> AsEnumerator () {
 			return _children.GetEnumerator();
 		}

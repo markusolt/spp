@@ -97,5 +97,9 @@ namespace Spp.Types {
 			}
 			writer.Write('}');
 		}
+
+		internal override Value Copy () {
+			return new Map(Position, new Dictionary<string, Value>(_children));
+		}
 	}
 }

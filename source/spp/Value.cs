@@ -78,6 +78,10 @@ namespace Spp {
 			return this;
 		}
 
+		internal virtual Value Copy () {
+			return this;
+		}
+
 		public override string ToString () {
 			StringWriter buffer;
 
