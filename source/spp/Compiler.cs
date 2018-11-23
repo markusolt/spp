@@ -10,6 +10,9 @@ namespace Spp {
 		private TextWriter _writer;
 		private Value _memory;
 
+		internal string CdInput;
+		internal string CdOutput;
+
 		internal Compiler () {
 			_buffer = new StringBuilder();
 		}
@@ -38,6 +41,8 @@ namespace Spp {
 				_writer = null;
 			}
 			_memory = Value.NewMap();
+			CdInput = Path.GetFullPath(".");
+			CdOutput = Path.GetFullPath(".");
 		}
 
 		internal void Compile (string filePath) {
