@@ -10,6 +10,8 @@ namespace Spp.Types {
 		private Func<Compiler, Position, Value> _evaluate;
 
 		private static Dictionary<string, Func<Compiler, Position, Value>> _root = new Dictionary<string, Func<Compiler, Position, Value>> {
+			{"cdinput",  _cdinput},
+			{"cdoutput", _cdoutput}
 		};
 
 		internal Auto (Position position, Func<Compiler, Position, Value> evaluate) : base(position) {
@@ -40,6 +42,14 @@ namespace Spp.Types {
 
 		internal override Value Evaluate (Compiler compiler, Value node) {
 			return _evaluate(compiler, Position);
+		}
+
+		private static Value _cdinput (Compiler compiler, Position position) {
+			return new Text(position, compiler.CdInput);
+		}
+
+		private static Value _cdoutput (Compiler compiler, Position position) {
+			return new Text(position, compiler.CdOutput);
 		}
 	}
 }
