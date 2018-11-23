@@ -41,7 +41,7 @@ namespace Spp {
 
 			var = null;
 			if (instr.HasVar) {
-				var = Variable.Parse(reader);
+				var = Variable.Parse(reader, true);
 				_space(reader);
 			}
 

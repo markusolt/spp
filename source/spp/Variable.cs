@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Spp.IO;
 using Spp.Types;
@@ -10,21 +11,31 @@ namespace Spp {
 		private Variable _next;
 
 		private const string _pattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
+		private static readonly HashSet<string> _blacklist = new HashSet<string> {
+			"warning", "error", "try", "let", "input", "cdinput", "output", "cdoutput", "close", "for"
+		};
 
 		internal Variable (Position position, Value name, Variable next) : base(position) {
 			_name = name;
 			_next = next;
 		}
 
-		internal new static Variable Parse (Reader reader) {
+		internal static Variable Parse (Reader reader, bool isRooted) {
 			Variable root;
 			Variable current;
+			Position pos;
+			string key;
 
 			if (!reader.Match(_pattern)) {
 				throw new CompileException("Expected a variable.", reader.Position);
 			}
 
-			root = new Variable(reader.Position, new Text(reader.Position, reader.Consume(_pattern)), null);
+			pos = reader.Position;
+			key = reader.Consume(_pattern);
+			if (isRooted && _blacklist.Contains(key)) {
+				throw new CompileException("Expected a variable.", pos);
+			}
+			root = new Variable(pos, new Text(pos, key), null);
 			current = root;
 
 			while (reader.Match("[")) {
@@ -36,7 +47,7 @@ namespace Spp {
 
 			if (reader.Match(".")) {
 				reader.Read();
-				current._next = Variable.Parse(reader);
+				current._next = Variable.Parse(reader, false);
 			}
 			return root;
 		}
