@@ -50,7 +50,7 @@ namespace Spp {
 		}
 
 		private static void _let (Compiler compiler, Variable var, Value val, Command chain) {
-			var.Set(compiler.Variables, val);
+			var.Set(compiler, null, val);
 		}
 
 		private static void _for (Compiler compiler, Variable var, Value val, Command chain) {

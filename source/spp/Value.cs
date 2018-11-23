@@ -74,7 +74,7 @@ namespace Spp {
 			throw new CompileException("Expected a collection.", _position);
 		}
 
-		internal virtual Value Evaluate (Value container, Value node) {
+		internal virtual Value Evaluate (Compiler compiler, Value node) {
 			return this;
 		}
 

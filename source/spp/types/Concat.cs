@@ -17,12 +17,12 @@ namespace Spp.Types {
 			throw new NotSupportedException("Concats should be evaluated before stringify.");
 		}
 
-		internal override Value Evaluate (Value root, Value node) {
+		internal override Value Evaluate (Compiler compiler, Value node) {
 			StringWriter buffer;
 
 			buffer = new StringWriter();
 			foreach (Value e in _entries) {
-				e.Evaluate(root, root).Stringify(buffer, true);
+				e.Evaluate(compiler, null).Stringify(buffer, true);
 			}
 			return new Text(Position, buffer.ToString());
 		}

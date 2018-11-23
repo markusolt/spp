@@ -77,7 +77,7 @@ namespace Spp {
 
 			val = _val;
 			if (val != null) {
-				val = val.Evaluate(compiler.Variables, compiler.Variables);
+				val = val.Evaluate(compiler, null);
 			}
 
 			_function(compiler, _var, val, _chain);

@@ -53,30 +53,34 @@ namespace Spp {
 			throw new NotSupportedException("Variables should be evaluated before stringify.");
 		}
 
-		internal override Value Evaluate (Value root, Value node) { // TODO: simplify arguments
+		internal override Value Evaluate (Compiler compiler, Value node) {
 			Value val;
 
+			if (node == null) {
+				node = compiler.Variables;
+			}
+
 			if (_next != null) {
-				val = _next.Evaluate(root, node[_name.Evaluate(root, root)]);
+				val = _next.Evaluate(compiler, node[_name.Evaluate(compiler, null)]);
 				val.Position = Position;
 				return val;
 			}
 
-			val = node[_name.Evaluate(root, root)];
+			val = node[_name.Evaluate(compiler, null)];
 			val.Position = Position;
 			return val.Copy();
 		}
 
-		internal void Set (Value root, Value value) {
-			_set(root, root, value);
-		}
+		internal void Set (Compiler compiler, Value node, Value value) {
+			if (node == null) {
+				node = compiler.Variables;
+			}
 
-		private void _set (Value root, Value node, Value value) {
 			if (_next != null) {
-				_next._set(root, node[_name.Evaluate(root, root)], value);
+				_next.Set(compiler, node[_name.Evaluate(compiler, null)], value);
 				return;
 			}
-			node[_name.Evaluate(root, root)] = value;
+			node[_name.Evaluate(compiler, null)] = value;
 		}
 	}
 }
