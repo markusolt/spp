@@ -20,6 +20,7 @@ namespace Spp {
 			All.Add("for",     new Instruction(_for,   true,  true,  All));
 			All.Add("write",   new Instruction(_write, false, true,  null));
 			All.Add("close",   new Instruction(_close, false, false, null));
+			All.Add("input",   new Instruction(_input, false, true,  null));
 		}
 
 		internal Instruction (Action<Compiler, Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
@@ -59,6 +60,10 @@ namespace Spp {
 
 		private static void _close (Compiler compiler, Variable var, Value val, Command chain) {
 			compiler.Writer = null;
+		}
+
+		private static void _input (Compiler compiler, Variable var, Value val, Command chain) {
+			compiler.CompileInsert(val.AsString());
 		}
 	}
 }
