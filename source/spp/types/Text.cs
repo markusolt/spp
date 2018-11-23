@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Spp;
@@ -13,9 +14,10 @@ namespace Spp.Types {
 			_content = content;
 		}
 
-		internal new static Text Parse (Reader reader) {
+		internal new static Value Parse (Reader reader) {
 			StringBuilder buffer;
 			char c;
+			List<Value> list;
 			Position rootPos;
 			Position pos;
 
@@ -28,6 +30,7 @@ namespace Spp.Types {
 
 			buffer = new StringBuilder();
 			c = ' ';
+			list = new List<Value>();
 
 			while (c != '"') {
 				pos = reader.Position;
@@ -80,7 +83,17 @@ namespace Spp.Types {
 						throw new CompileException("Unclosed quoted string.", pos);
 					}
 					case '$': {
-						//Variable.Parse(reader).Find(reader.Compiler.Variables).Stringify(new StringWriter(buffer), true);
+						if (reader.Match("$")) {
+							reader.Read();
+							buffer.Append('$');
+							break;
+						}
+
+						if (buffer.Length > 0) {
+							list.Add(new Text(rootPos, buffer.ToString()));
+							buffer.Clear();
+						}
+						list.Add(Variable.Parse(reader));
 						reader.Assert('$');
 						break;
 					}
@@ -91,7 +104,15 @@ namespace Spp.Types {
 				}
 			}
 
-			return new Text(rootPos, buffer.ToString());
+			if (buffer.Length > 0) {
+				list.Add(new Text(rootPos, buffer.ToString()));
+				buffer.Clear();
+			}
+
+			if (list.Count == 1 && list[0] is Text) {
+				return list[0];
+			}
+			return new Concat(rootPos, list);
 		}
 
 		internal override void Stringify (TextWriter writer, bool root) {
