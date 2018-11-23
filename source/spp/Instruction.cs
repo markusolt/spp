@@ -37,7 +37,9 @@ namespace Spp {
 		private static void _try (Compiler compiler, Variable var, Value val, Command chain) {
 			try {
 				chain.Invoke(compiler);
-			} catch (CompileException) {}
+			} catch (CompileException e) {
+				Console.WriteLine(e.Position.ToString() + ": Caught: Error: " + e.Message);
+			}
 		}
 
 		private static void _let (Compiler compiler, Variable var, Value val, Command chain) {
