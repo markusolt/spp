@@ -27,11 +27,11 @@ namespace Spp.Types {
 			position = reader.Position;
 			reader.Assert(':');
 			key = reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-			if (!_root.ContainsKey(key)) {
+			if (!_root.ContainsKey(key.ToLower())) {
 				throw new CompileException("Unkown auto \"" + key + "\".", position);
 			}
 
-			return new Auto(position, _root[key]);
+			return new Auto(position, _root[key.ToLower()]);
 		}
 
 		internal override void Stringify (TextWriter writer, bool root) {

@@ -29,7 +29,7 @@ namespace Spp {
 
 			pos = reader.Position;
 			key = reader.Consume(_pattern);
-			if (isRooted && Instruction.Root.ContainsKey(key)) {
+			if (isRooted && Instruction.Root.ContainsKey(key.ToLower())) {
 				throw new CompileException("Expected a variable.", pos);
 			}
 			root = new Variable(pos, new Text(pos, key), null);

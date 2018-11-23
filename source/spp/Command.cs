@@ -33,10 +33,10 @@ namespace Spp {
 
 			pos = reader.Position;
 			key = reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-			if (!instructions.ContainsKey(key)) {
+			if (!instructions.ContainsKey(key.ToLower())) {
 				throw new CompileException("Unkown instruction \"" + key + "\".", pos);
 			}
-			instr = instructions[key];
+			instr = instructions[key.ToLower()];
 			_space(reader);
 
 			var = null;
