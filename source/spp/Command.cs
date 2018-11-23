@@ -41,13 +41,13 @@ namespace Spp {
 
 			var = null;
 			if (instr.HasVar) {
-				var = Variable.Parse(reader, true);
+				var = Variable.ParseVariable(reader);
 				_space(reader);
 			}
 
 			val = null;
 			if (instr.HasVal) {
-				val = Value.Parse(reader);
+				val = Value.ParseValue(reader);
 				_space(reader);
 			}
 

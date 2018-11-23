@@ -14,7 +14,7 @@ namespace Spp.Types {
 			_content = content;
 		}
 
-		internal new static Value Parse (Reader reader) {
+		internal static Value Parse (Reader reader) {
 			int first;
 			Position pos;
 

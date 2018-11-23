@@ -14,7 +14,7 @@ namespace Spp.Types {
 			_content = content;
 		}
 
-		internal new static Value Parse (Reader reader) {
+		internal static Value Parse (Reader reader) {
 			StringBuilder buffer;
 			char c;
 			List<Value> list;
@@ -93,7 +93,7 @@ namespace Spp.Types {
 							list.Add(new Text(rootPos, buffer.ToString()));
 							buffer.Clear();
 						}
-						list.Add(Variable.Parse(reader));
+						list.Add(Variable.ParseVariable(reader));
 						reader.Assert('$');
 						break;
 					}

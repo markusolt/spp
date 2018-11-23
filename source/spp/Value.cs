@@ -17,7 +17,7 @@ namespace Spp {
 				new Parser<Value>("0123456789", Num.Parse),
 				new Parser<Value>("[", Sequence.Parse),
 				new Parser<Value>("\"", Text.Parse),
-				new Parser<Value>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", Variable.Parse),
+				new Parser<Value>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", Variable.ParseVariable),
 				new Parser<Value>(":", Auto.Parse),
 			};
 		}
@@ -35,7 +35,7 @@ namespace Spp {
 			}
 		}
 
-		internal static Value Parse (Reader reader) {
+		internal static Value ParseValue (Reader reader) {
 			char c;
 
 			c = reader.Peek();

@@ -18,7 +18,7 @@ namespace Spp.Types {
 			_evaluate = evaluate;
 		}
 
-		internal new static Auto Parse (Reader reader) {
+		internal static Auto Parse (Reader reader) {
 			string key;
 			Position position;
 

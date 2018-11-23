@@ -17,7 +17,7 @@ namespace Spp {
 			_next = next;
 		}
 
-		internal static Variable Parse (Reader reader) {
+		internal static Variable ParseVariable (Reader reader) {
 			return _parse(reader, true);
 		}
 
@@ -41,7 +41,7 @@ namespace Spp {
 
 			while (reader.Match("[")) {
 				reader.Read();
-				current._next = new Variable(reader.Position, Value.Parse(reader), null);
+				current._next = new Variable(reader.Position, Value.ParseValue(reader), null);
 				current = current._next;
 				reader.Assert(']');
 			}

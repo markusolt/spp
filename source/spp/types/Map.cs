@@ -30,7 +30,7 @@ namespace Spp.Types {
 			}
 		}
 
-		internal new static Map Parse (Reader reader) {
+		internal static Map Parse (Reader reader) {
 			Dictionary<string, Value> children;
 			string key;
 			Position pos;
@@ -59,7 +59,7 @@ namespace Spp.Types {
 				reader.Assert(':');
 				reader.Skip(" \t\n");
 
-				children.Add(key, Value.Parse(reader));
+				children.Add(key, Value.ParseValue(reader));
 
 				reader.Skip(" \t\n");
 				switch (reader.Peek()) {

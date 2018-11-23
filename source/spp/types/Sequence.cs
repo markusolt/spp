@@ -42,7 +42,7 @@ namespace Spp.Types {
 			}
 		}
 
-		internal new static Sequence Parse (Reader reader) {
+		internal static Sequence Parse (Reader reader) {
 			List<Value> children;
 			Position pos;
 
@@ -61,7 +61,7 @@ namespace Spp.Types {
 			}
 
 			while (true) {
-				children.Add(Value.Parse(reader));
+				children.Add(Value.ParseValue(reader));
 
 				reader.Skip(" \t\n");
 				switch (reader.Peek()) {
