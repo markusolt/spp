@@ -67,7 +67,7 @@ namespace Spp {
 			string path;
 
 			try {
-				path = Path.Combine(compiler.CdInput, val.AsString());
+				path = Path.GetFullPath(Path.Combine(compiler.CdInput, val.AsString()));
 			} catch (ArgumentException e) {
 				throw new CompileException("Illegal characters in path.", val.Position, e);
 			}
@@ -99,7 +99,7 @@ namespace Spp {
 			string path;
 
 			try {
-				path = Path.Combine(compiler.CdOutput, val.AsString());
+				path = Path.GetFullPath(Path.Combine(compiler.CdOutput, val.AsString()));
 			} catch (ArgumentException e) {
 				throw new CompileException("Illegal characters in path.", val.Position, e);
 			}
