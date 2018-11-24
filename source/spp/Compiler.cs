@@ -107,7 +107,7 @@ namespace Spp {
 						return;
 					}
 					case '$': {
-						Variable.ParseVariable(reader).Evaluate(this, null).Stringify(_writer, true);
+						Value.ParseValue(reader).Evaluate(this, null).Stringify(_writer, true);
 						reader.Assert('$');
 						break;
 					}

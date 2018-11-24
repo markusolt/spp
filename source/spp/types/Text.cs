@@ -93,7 +93,7 @@ namespace Spp.Types {
 							list.Add(new Text(rootPos, buffer.ToString()));
 							buffer.Clear();
 						}
-						list.Add(Variable.ParseVariable(reader));
+						list.Add(Value.ParseValue(reader));
 						reader.Assert('$');
 						break;
 					}
