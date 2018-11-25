@@ -1,0 +1,59 @@
+%YAML 1.2
+---
+name: spp
+file_extensions: [spp]
+scope: source.spp
+contexts:
+  main:
+    - match: '^(?>\s*)(?!#)'
+      push: content
+    - match: '(?i)(warning|error|try|let|input|cdinput|output|cdoutput|close|for)'
+      scope: keyword.control
+    - include: value
+  content:
+    - match: '$'
+      pop: true
+    - include: string_content
+  string_content:
+    - match: '\$\$'
+      scope: constant.character.escape
+    - match: '\$'
+      scope: punctuation.accessor
+      push: value_inline
+  value_inline:
+    - match: '\$'
+      scope: punctuation.accessor
+      pop: true
+    - include: value
+  value:
+    - match: ':[a-zA-Z]+'
+      scope: variable.language
+    - match: '[a-zA-Z_][a-zA-Z_0-9]*'
+      scope: entity.name.function
+    - match: '[0-9]+'
+      scope: constant.numeric.interger
+    - match: '"'
+      scope: punctuation.definition.string.begin
+      push: string_quoted
+    - match: '\.\.'
+      scope: keyword.operator
+    - match: '\.'
+      scope: punctuation.accessor
+    - match: '\[|\]'
+      scope: punctuation.accessor
+    - match: '{}'
+      scope: punctuation.accessor
+    - match: ','
+      scope: punctuation.accessor
+  string_quoted:
+    - meta_content_scope: string.quoted.double
+    - match: '"'
+      scope: punctuation.definition.string.end
+      pop: true
+    - match: '\n'
+      scope: invalid.illegal.unclosed_string
+    - match: '\\("|\$|\\|/|r|n|t|f)'
+      scope: constant.character.escape
+    - match: '\\.?'
+      scope: invalid.illegal.unknown_escape
+    - include: string_content
