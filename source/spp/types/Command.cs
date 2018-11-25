@@ -10,9 +10,9 @@ namespace Spp {
 		private Variable[] _variables;
 		private ValueRecipe[] _values;
 
-		internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", _parse);
+		internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("command", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", _parse);
 
-		protected Command (Position position, Func<Compiler, Variable[], ValueRecipe[], Value> function, Variable[] variables, ValueRecipe[] values) : base(position) {
+		internal Command (Position position, Func<Compiler, Variable[], ValueRecipe[], Value> function, Variable[] variables, ValueRecipe[] values) : base(position) {
 			_function = function;
 			_variables = variables;
 			_values = values;

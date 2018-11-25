@@ -7,10 +7,10 @@ namespace Spp {
 	internal class Variable : ValueRecipe {
 		private string _name;
 
-		internal static readonly Parser<Variable> VariableParser = new ParseToken<Variable>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _parse);
-		internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _parse);
+		internal static readonly Parser<Variable> VariableParser = new ParseToken<Variable>("variable", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _parse);
+		internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("variable", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _parse);
 
-		protected Variable (Position position, string name) : base(position) {
+		internal Variable (Position position, string name) : base(position) {
 			_name = name;
 		}
 
