@@ -41,18 +41,17 @@ namespace Spp {
 				throw new CompileException("Unkown instruction \"" + key + "\".", pos);
 			}
 			instr = instructions[key.ToLower()];
-			_space(reader);
 
 			variables = new Variable[instr.VariableCount];
 			for (int i = 0; i < variables.Length; i++) {
-				variables[i] = Variable.VariableParser.Parse(reader);
 				_space(reader);
+				variables[i] = Variable.VariableParser.Parse(reader);
 			}
 
 			values = new ValueRecipe[instr.ValueCount];
 			for (int i = 0; i < values.Length; i++) {
-				values[i] = ValueRecipe.ValueRecipeParser.Parse(reader);
 				_space(reader);
+				values[i] = ValueRecipe.ValueRecipeParser.Parse(reader);
 			}
 
 			return new Command(pos, instr.Function, variables, values);
