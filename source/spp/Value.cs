@@ -6,6 +6,8 @@ using Spp;
 
 namespace Spp {
 	internal abstract class Value : ValueRecipe {
+		internal static readonly Value Empty = new Empty(default(Position));
+
 		protected Value (Position position) : base(position) {}
 
 		internal virtual bool IsInt { get { return false; } }

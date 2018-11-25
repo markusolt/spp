@@ -19,7 +19,9 @@ namespace Spp {
 		}
 
 		internal override Value Evaluate (Compiler compiler) {
-			return _function(compiler, _variables, _values);
+			Value result = _function(compiler, _variables, _values);
+			result.Position = Position;
+			return result;
 		}
 
 		private static Command _parse (Reader reader) {

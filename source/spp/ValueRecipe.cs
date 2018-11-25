@@ -12,7 +12,7 @@ namespace Spp {
 			_position = position;
 		}
 
-		internal Position Position { get { return _position; } }
+		internal Position Position { get { return _position; } set { _position = value; } }
 
 		internal abstract Value Evaluate (Compiler compiler);
 	}

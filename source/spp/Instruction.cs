@@ -30,12 +30,16 @@ namespace Spp {
 		}
 
 		private static Value _warn (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Console.WriteLine(values[0].Position.ToString() + ": Warning: " + values[0].ToString());
-			return null;
+			Value val = values[0].Evaluate(compiler);
+
+			Console.WriteLine(val.Position.ToString() + ": Warning: " + val.ToString());
+			return Value.Empty;
 		}
 
 		private static Value _error (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			throw new CompileException(values[0].ToString(), values[0].Position);
+			Value val = values[0].Evaluate(compiler);
+
+			throw new CompileException(val.ToString(), val.Position);
 		}
 
 		private static Value _try (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -44,14 +48,14 @@ namespace Spp {
 			} catch (CompileException e) {
 				Console.WriteLine(e.Position.ToString() + ": Caught: Error: " + e.Message);
 			}
-			return null;
+			return Value.Empty;
 		}
 
 		private static Value _let (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			Value val = values[0].Evaluate(compiler);
 
 			variables[0].Set(compiler,val);
-			return null;
+			return Value.Empty;
 		}
 
 		private static Value _for (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -65,7 +69,7 @@ namespace Spp {
 				values[1].Evaluate(compiler);
 			}
 
-			return null;
+			return Value.Empty;
 		}
 
 		private static Value _cdinput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -84,7 +88,7 @@ namespace Spp {
 			}
 
 			compiler.CdInput = path;
-			return null;
+			return Value.Empty;
 		}
 
 		private static Value _input (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -103,7 +107,7 @@ namespace Spp {
 			}
 
 			compiler.CompileInsert(filePath);
-			return null;
+			return Value.Empty;
 		}
 
 		private static Value _cdoutput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -122,7 +126,7 @@ namespace Spp {
 			}
 
 			compiler.CdOutput = path;
-			return null;
+			return Value.Empty;
 		}
 
 		private static Value _output (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -137,12 +141,12 @@ namespace Spp {
 			}
 
 			compiler.Writer = new StreamWriter(filePath, false);
-			return null;
+			return Value.Empty;
 		}
 
 		private static Value _close (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			compiler.Writer = null;
-			return null;
+			return Value.Empty;
 		}
 	}
 }
