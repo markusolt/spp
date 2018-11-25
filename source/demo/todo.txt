@@ -1,7 +1,0 @@
-- automatic variables (use new type prefixed with ':')
-- delay evaluation of content
-- custom variable error message for rooted
-
-# later
-- add catch to try
-- group instructions with '&'

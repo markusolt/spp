@@ -1,5 +1,0 @@
-# let person {}
-
-# let person.name "peter"
-
-# warning person

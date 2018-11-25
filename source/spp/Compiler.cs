@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Spp.IO;
@@ -8,7 +9,7 @@ namespace Spp {
 	internal class Compiler : IDisposable {
 		private StringBuilder _buffer;
 		private TextWriter _writer;
-		private Value _memory;
+		private Dictionary<string, Value> _variables;
 
 		internal string CdInput;
 		internal string CdOutput;
@@ -29,9 +30,9 @@ namespace Spp {
 			}
 		}
 
-		internal Value Variables {
+		internal Dictionary<string, Value> Variables {
 			get {
-				return _memory;
+				return _variables;
 			}
 		}
 
@@ -40,7 +41,7 @@ namespace Spp {
 				_writer.Dispose();
 				_writer = null;
 			}
-			_memory = Value.NewMap();
+			_variables = new Dictionary<string, Value>();
 			CdInput = Path.GetFullPath(".");
 			CdOutput = Path.GetFullPath(".");
 		}
@@ -83,7 +84,7 @@ namespace Spp {
 				case '#': {
 					reader.Read();
 					reader.Skip(" \t");
-					Command.Parse(reader, Instruction.Root).Invoke(this);
+					ValueRecipe.ValueRecipeParser.Parse(reader).Evaluate(this);
 					reader.Read();
 					return;
 				}
@@ -107,7 +108,7 @@ namespace Spp {
 						return;
 					}
 					case '$': {
-						Value.ParseValue(reader).Evaluate(this, null).Stringify(_writer, true);
+						ValueRecipe.ValueRecipeParser.Parse(reader).Evaluate(this).Stringify(_writer, true);
 						reader.Assert('$');
 						break;
 					}
@@ -124,7 +125,7 @@ namespace Spp {
 				_writer.Dispose();
 				_writer = null;
 			}
-			_memory = null;
+			_variables = null;
 		}
 	}
 }

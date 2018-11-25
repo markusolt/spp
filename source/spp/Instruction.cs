@@ -6,65 +6,72 @@ using Spp;
 
 namespace Spp {
 	internal struct Instruction {
-		internal Action<Compiler, Variable, Value, Command> Function;
-		internal bool HasVar;
-		internal bool HasVal;
-		internal Dictionary<string, Instruction> Chain;
+		internal Func<Compiler, Variable[], ValueRecipe[], Value> Function;
+		internal int VariableCount;
+		internal int ValueCount;
 
-		internal static readonly Dictionary<string, Instruction> Root = new Dictionary<string, Instruction>();
+		internal static readonly Dictionary<string, Instruction> Root = new Dictionary<string, Instruction>() {
+			{"warning",  new Instruction(_warn,     0, 1)},
+			{"error",    new Instruction(_error,    0, 1)},
+			{"try",      new Instruction(_try,      0, 1)},
+			{"let",      new Instruction(_let,      1, 1)},
+			{"input",    new Instruction(_input,    0, 1)},
+			{"cdinput",  new Instruction(_cdinput,  0, 1)},
+			{"output",   new Instruction(_output,   0, 1)},
+			{"cdoutput", new Instruction(_cdoutput, 0, 1)},
+			{"close",    new Instruction(_close,    0, 0)},
+			{"for",      new Instruction(_for,      1, 2)}
+		};
 
-		static Instruction () {
-			Root.Add("warning",  new Instruction(_warn,     false, true,  null));
-			Root.Add("error",    new Instruction(_error,    false, true,  null));
-			Root.Add("try",      new Instruction(_try,      false, false, Root));
-			Root.Add("let",      new Instruction(_let,      true,  true,  null));
-			Root.Add("input",    new Instruction(_input,    false, true,  null));
-			Root.Add("cdinput",  new Instruction(_cdinput,  false, true,  null));
-			Root.Add("output",   new Instruction(_output,   false, true,  null));
-			Root.Add("cdoutput", new Instruction(_cdoutput, false, true,  null));
-			Root.Add("close",    new Instruction(_close,    false, false, null));
-			Root.Add("for",      new Instruction(_for,      true,  true,  Root));
-		}
-
-		internal Instruction (Action<Compiler, Variable, Value, Command> function, bool hasVar, bool hasVal, Dictionary<string, Instruction> chain) {
+		internal Instruction (Func<Compiler, Variable[], ValueRecipe[], Value> function, int variableCount, int valueCount) {
 			Function = function;
-			HasVar = hasVar;
-			HasVal = hasVal;
-			Chain = chain;
+			VariableCount = variableCount;
+			ValueCount = valueCount;
 		}
 
-		private static void _warn (Compiler compiler, Variable var, Value val, Command chain) {
-			Console.WriteLine(val.Position.ToString() + ": Warning: " + val.ToString());
+		private static Value _warn (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			Console.WriteLine(values[0].Position.ToString() + ": Warning: " + values[0].ToString());
+			return null;
 		}
 
-		private static void _error (Compiler compiler, Variable var, Value val, Command chain) {
-			throw new CompileException(val.ToString(), val.Position);
+		private static Value _error (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			throw new CompileException(values[0].ToString(), values[0].Position);
 		}
 
-		private static void _try (Compiler compiler, Variable var, Value val, Command chain) {
+		private static Value _try (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			try {
-				chain.Invoke(compiler);
+				values[0].Evaluate(compiler);
 			} catch (CompileException e) {
 				Console.WriteLine(e.Position.ToString() + ": Caught: Error: " + e.Message);
 			}
+			return null;
 		}
 
-		private static void _let (Compiler compiler, Variable var, Value val, Command chain) {
-			var.Set(compiler, null, val);
+		private static Value _let (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			Value val = values[0].Evaluate(compiler);
+
+			variables[0].Set(compiler,val);
+			return null;
 		}
 
-		private static void _for (Compiler compiler, Variable var, Value val, Command chain) {
+		private static Value _for (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			Value val = values[0].Evaluate(compiler);
+
 			IEnumerator<Value> enumerator = val.AsEnumerator();
 			enumerator.Reset();
 
 			while (enumerator.MoveNext()) {
-				_let(compiler, var, enumerator.Current, null);
-				chain.Invoke(compiler);
+				_let(compiler, variables, new ValueRecipe[] {enumerator.Current});
+				values[1].Evaluate(compiler);
 			}
+
+			return null;
 		}
 
-		private static void _cdinput (Compiler compiler, Variable var, Value val, Command chain) {
+		private static Value _cdinput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string path;
+
+			Value val = values[0].Evaluate(compiler);
 
 			try {
 				path = Path.GetFullPath(Path.Combine(compiler.CdInput, val.AsString()));
@@ -77,10 +84,13 @@ namespace Spp {
 			}
 
 			compiler.CdInput = path;
+			return null;
 		}
 
-		private static void _input (Compiler compiler, Variable var, Value val, Command chain) {
+		private static Value _input (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string filePath;
+
+			Value val = values[0].Evaluate(compiler);
 
 			try {
 				filePath = Path.Combine(compiler.CdInput, val.AsString());
@@ -93,10 +103,13 @@ namespace Spp {
 			}
 
 			compiler.CompileInsert(filePath);
+			return null;
 		}
 
-		private static void _cdoutput (Compiler compiler, Variable var, Value val, Command chain) {
+		private static Value _cdoutput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string path;
+
+			Value val = values[0].Evaluate(compiler);
 
 			try {
 				path = Path.GetFullPath(Path.Combine(compiler.CdOutput, val.AsString()));
@@ -109,10 +122,13 @@ namespace Spp {
 			}
 
 			compiler.CdOutput = path;
+			return null;
 		}
 
-		private static void _output (Compiler compiler, Variable var, Value val, Command chain) {
+		private static Value _output (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string filePath;
+
+			Value val = values[0].Evaluate(compiler);
 
 			try {
 				filePath = Path.Combine(compiler.CdOutput, val.AsString());
@@ -121,10 +137,12 @@ namespace Spp {
 			}
 
 			compiler.Writer = new StreamWriter(filePath, false);
+			return null;
 		}
 
-		private static void _close (Compiler compiler, Variable var, Value val, Command chain) {
+		private static Value _close (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			compiler.Writer = null;
+			return null;
 		}
 	}
 }
