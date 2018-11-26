@@ -16,7 +16,7 @@ namespace Spp {
 			StringWriter buffer;
 
 			buffer = new StringWriter();
-			foreach (Value entry in _list) {
+			foreach (ValueRecipe entry in _list) {
 				entry.Evaluate(compiler).Stringify(buffer, true);
 			}
 			return new Text(_position, buffer.ToString());
