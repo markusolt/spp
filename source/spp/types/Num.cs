@@ -7,9 +7,9 @@ namespace Spp {
 	internal class Num : Value {
 		private int _payload;
 
-		internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("0123456789", _parse);
+		internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("integer", "0123456789", _parse);
 
-		protected Num (Position position, int payload) : base(position) {
+		internal Num (Position position, int payload) : base(position) {
 			_payload = payload;
 		}
 

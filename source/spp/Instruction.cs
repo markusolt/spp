@@ -20,7 +20,8 @@ namespace Spp {
 			{"output",   new Instruction(_output,   0, 1)},
 			{"cdoutput", new Instruction(_cdoutput, 0, 1)},
 			{"close",    new Instruction(_close,    0, 0)},
-			{"for",      new Instruction(_for,      1, 2)}
+			{"for",      new Instruction(_for,      1, 2)},
+			{"add",      new Instruction(_add,      0, 2)}
 		};
 
 		internal Instruction (Func<Compiler, Variable[], ValueRecipe[], Value> function, int variableCount, int valueCount) {
@@ -44,7 +45,7 @@ namespace Spp {
 
 		private static Value _try (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			try {
-				values[0].Evaluate(compiler);
+				return values[0].Evaluate(compiler);
 			} catch (CompileException e) {
 				Console.WriteLine(e.Position.ToString() + ": Caught: Error: " + e.Message);
 			}
@@ -88,7 +89,7 @@ namespace Spp {
 			}
 
 			compiler.CdInput = path;
-			return Value.Empty;
+			return new Text(default(Position), path);
 		}
 
 		private static Value _input (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -107,7 +108,7 @@ namespace Spp {
 			}
 
 			compiler.CompileInsert(filePath);
-			return Value.Empty;
+			return new Text(default(Position), filePath);
 		}
 
 		private static Value _cdoutput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -126,7 +127,7 @@ namespace Spp {
 			}
 
 			compiler.CdOutput = path;
-			return Value.Empty;
+			return new Text(default(Position), path);
 		}
 
 		private static Value _output (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -141,12 +142,19 @@ namespace Spp {
 			}
 
 			compiler.Writer = new StreamWriter(filePath, false);
-			return Value.Empty;
+			return new Text(default(Position), filePath);
 		}
 
 		private static Value _close (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			compiler.Writer = null;
 			return Value.Empty;
+		}
+
+		private static Value _add (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			int i1 = values[0].Evaluate(compiler).AsInt();
+			int i2 = values[1].Evaluate(compiler).AsInt();
+
+			return new Num(default(Position), i1 + i2);
 		}
 	}
 }
