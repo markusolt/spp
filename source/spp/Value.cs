@@ -10,6 +10,15 @@ namespace Spp {
 
 		protected Value (Position position) : base(position) {}
 
+		internal virtual Value this[Value key] {
+			get {
+				throw new CompileException("Object is not a collection.", _position);
+			}
+			set {
+				throw new CompileException("Object is not a collection.", _position);
+			}
+		}
+
 		internal virtual bool IsInt { get { return false; } }
 
 		internal virtual bool IsString { get { return false; } }

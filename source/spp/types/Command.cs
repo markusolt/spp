@@ -45,7 +45,7 @@ namespace Spp {
 			variables = new Variable[instr.VariableCount];
 			for (int i = 0; i < variables.Length; i++) {
 				_space(reader);
-				variables[i] = Variable.VariableParser.Parse(reader);
+				variables[i] = ValueRecipe.ValueRecipeParser.Parse(reader).AsVariable();
 			}
 
 			values = new ValueRecipe[instr.ValueCount];

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Spp.IO;
@@ -9,7 +8,7 @@ namespace Spp {
 	internal class Compiler : IDisposable {
 		private StringBuilder _buffer;
 		private TextWriter _writer;
-		private Dictionary<string, Value> _variables;
+		private Value _variables;
 
 		internal string CdInput;
 		internal string CdOutput;
@@ -30,7 +29,7 @@ namespace Spp {
 			}
 		}
 
-		internal Dictionary<string, Value> Variables {
+		internal Value Variables {
 			get {
 				return _variables;
 			}
@@ -41,7 +40,7 @@ namespace Spp {
 				_writer.Dispose();
 				_writer = null;
 			}
-			_variables = new Dictionary<string, Value>();
+			_variables = new Map();
 			CdInput = Path.GetFullPath(".");
 			CdOutput = Path.GetFullPath(".");
 		}
