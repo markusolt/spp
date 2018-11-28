@@ -25,7 +25,7 @@ namespace Spp {
 
 		internal virtual bool IsString { get { return false; } }
 
-		internal virtual bool IsEnumerator { get { return false; } }
+		internal virtual bool IsEnumerable { get { return false; } }
 
 		internal override Value Evaluate (Compiler compiler) { return this; }
 
@@ -43,7 +43,7 @@ namespace Spp {
 			throw new CompileException("Expected a string.", _position);
 		}
 
-		internal virtual IEnumerator<Value> AsEnumerator () {
+		internal virtual IEnumerable<Value> AsEnumerable () {
 			throw new CompileException("Expected a list.", _position);
 		}
 

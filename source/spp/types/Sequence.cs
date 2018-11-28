@@ -12,9 +12,9 @@ namespace Spp {
 			_children = children;
 		}
 
-		internal override bool IsEnumerator { get { return true; } }
+		internal override bool IsEnumerable { get { return true; } }
 
-		internal override IEnumerator<Value> AsEnumerator () { return _children.GetEnumerator(); }
+		internal override IEnumerable<Value> AsEnumerable () { return _children; }
 
 		internal override TextWriter Stringify (TextWriter buffer, bool root) {
 			bool firstIteration;

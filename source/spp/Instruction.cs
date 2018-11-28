@@ -70,16 +70,18 @@ namespace Spp {
 
 		private static Value _for (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			Value val = values[0].Evaluate(compiler);
+			List<Value> results;
 
-			IEnumerator<Value> enumerator = val.AsEnumerator();
+			IEnumerator<Value> enumerator = val.AsEnumerable().GetEnumerator();
 			enumerator.Reset();
 
+			results = new List<Value>();
 			while (enumerator.MoveNext()) {
 				_let(compiler, variables, new ValueRecipe[] {enumerator.Current});
-				values[1].Evaluate(compiler);
+				results.Add(values[1].Evaluate(compiler));
 			}
 
-			return Value.Empty;
+			return new Sequence(default(Position), results);
 		}
 
 		private static string _resolveFile (string basePath, string path, Position position, bool canCreate) {
@@ -242,7 +244,7 @@ namespace Spp {
 
 		private static Value _contains (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string v2 = values[1].Evaluate(compiler).ToString();
-			IEnumerator<Value> enumerator = values[0].Evaluate(compiler).AsEnumerator();
+			IEnumerator<Value> enumerator = values[0].Evaluate(compiler).AsEnumerable().GetEnumerator();
 			Value e;
 
 			while (enumerator.MoveNext()) {

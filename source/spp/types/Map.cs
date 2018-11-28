@@ -31,6 +31,10 @@ namespace Spp {
 			}
 		}
 
+		internal override bool IsEnumerable { get { return true; } }
+
+		internal override IEnumerable<Value> AsEnumerable () { return new EnumerationMap<KeyValuePair<string, Value>, Value>(_children.GetEnumerator(), _enumerationConverter); }
+
 		internal override TextWriter Stringify (TextWriter buffer, bool root) {
 			bool firstIteration;
 
@@ -49,6 +53,13 @@ namespace Spp {
 			}
 			buffer.Write('}');
 			return buffer;
+		}
+
+		private static Map _enumerationConverter (KeyValuePair<string, Value> entry) {
+			return new Map(default(Position), new Dictionary<string, Value> {
+				{ "key", new Text(default(Position), entry.Key) },
+				{ "value", entry.Value }
+			});
 		}
 	}
 }
