@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Spp.IO;
 using Spp;
 
@@ -141,7 +142,8 @@ namespace Spp {
 				throw new CompileException("Illegal characters in path.", val.Position, e);
 			}
 
-			compiler.Writer = new StreamWriter(filePath, false);
+			// qlikview requires its xml files to be utf8-bom -> UTF8Encoding(true)
+			compiler.Writer = new StreamWriter(filePath, false, new UTF8Encoding(true));
 			return new Text(default(Position), filePath);
 		}
 
