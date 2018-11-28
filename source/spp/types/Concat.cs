@@ -1,25 +1,24 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal class Concat : ValueRecipe {
-		private List<ValueRecipe> _list;
+  internal class Concat : ValueRecipe {
+    private ValueRecipe[] _contents;
 
-		internal Concat (Position position, List<ValueRecipe> list) : base(position) {
-			_list = list;
-		}
+    internal Concat (Position position, ValueRecipe[] contents) : base(position) {
+      _contents = contents;
+    }
 
-		internal override Value Evaluate (Compiler compiler) {
-			StringWriter buffer;
+    internal override Value Evaluate (Compiler compiler) {
+      StringWriter writer;
 
-			buffer = new StringWriter();
-			foreach (ValueRecipe entry in _list) {
-				entry.Evaluate(compiler).Stringify(buffer, true);
-			}
-			return new Text(_position, buffer.ToString());
-		}
-	}
+      writer = new StringWriter();
+      foreach (ValueRecipe entry in _contents) {
+        entry.Evaluate(compiler).Stringify(writer, true);
+      }
+      return new Text(_position, writer.ToString());
+    }
+  }
 }

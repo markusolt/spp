@@ -4,63 +4,38 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal class Variable : ValueRecipe {
-		private Value _key;
-		private Variable _next;
+  internal class Variable : ValueRecipe {
+    private Value _key;
+    private Variable _parent;
 
-		internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("variable", ".", _parse);
+    internal Variable (Position position, string key, Variable parent) : base(position) {
+      _key = new Text(key);
+      _parent = parent;
+    }
 
-		internal Variable (Position position, Value key, Variable next) : base(position) {
-			_key = key;
-			_next = next;
-		}
+    internal Variable (Position position, Value key, Variable parent) : base(position) {
+      _key = key;
+      _parent = parent;
+    }
 
-		internal override bool IsVariable { get { return true; } }
+    internal override bool IsVariable { get { return true; } }
 
-		internal override Variable AsVariable () {
-			return this;
-		}
+    internal override Variable AsVariable () {
+      return this;
+    }
 
-		internal override Value Evaluate (Compiler compiler) {
-			Value res;
-			res = _evaluate(compiler.Variables);
-			res.Position = _position;
-			return res;
-		}
+    internal override Value Evaluate (Compiler compiler) {
+      Value parent;
 
-		internal void Set (Compiler compiler, Value payload) {
-			_set(compiler.Variables, payload);
-		}
+      parent = _parent == null ? compiler.Variables : _parent.Evaluate(compiler);
+      return parent[_key];
+    }
 
-		private Value _evaluate (Value parent) {
-			if (_next != null) {
-				return _next._evaluate(parent[_key]);
-			}
-			return parent[_key];
-		}
+    internal void Set (Compiler compiler, Value payload) {
+      Value parent;
 
-		private void _set (Value parent, Value payload) {
-			if (_next != null) {
-				_next._set(parent[_key], payload);
-			}
-			parent[_key] = payload;
-		}
-
-		private static Variable _parse (Reader reader) {
-			Position position;
-			Value key;
-
-			position = reader.Position;
-			reader.Read();
-			key = new Text(reader.Position, reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"));
-			if (key.AsString().Length == 0) {
-				throw new CompileException("Expected variable identifier.", reader.Position);
-			}
-
-			if (Parser.Match(reader.Peek())) {
-				return new Variable(position, key, Parser.Parse(reader).AsVariable());
-			}
-			return new Variable(position, key, null);
-		}
-	}
+      parent = _parent == null ? compiler.Variables : _parent.Evaluate(compiler);
+      parent[_key] = payload;
+    }
+  }
 }

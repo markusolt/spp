@@ -1,37 +1,94 @@
 using System;
+using System.Collections.Generic;
 using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal abstract class ValueRecipe {
-		protected Position _position;
+  internal abstract class ValueRecipe {
+    protected Position _position;
 
-		internal static readonly Parser<ValueRecipe> GroupParser = new ParseToken<ValueRecipe>("(", "(", _groupParser);
-		internal static readonly Parser<ValueRecipe> ValueRecipeParser = new ParseGroup<ValueRecipe>("value", new Parser<ValueRecipe>[] {GroupParser, Num.Parser, Text.Parser, Command.Parser, Variable.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
+    internal static readonly Parser<ValueRecipe> KeywordParser = new ParseToken<ValueRecipe>("variable", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _keywordParser);
+    internal static readonly Parser<ValueRecipe> GroupedParser = new ParseToken<ValueRecipe>("(", "(", _groupedParser);
+    internal static readonly Parser<ValueRecipe> ValueRecipeParser = new ParseGroup<ValueRecipe>("value", new Parser<ValueRecipe>[] {GroupedParser, KeywordParser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
 
-		protected ValueRecipe (Position position) {
-			_position = position;
-		}
+    protected ValueRecipe () {
+      _position = default(Position);
+    }
 
-		internal virtual bool IsVariable { get { return false; } }
+    protected ValueRecipe (Position position) {
+      _position = position;
+    }
 
-		internal Position Position { get { return _position; } set { _position = value; } }
+    internal virtual bool IsVariable { get { return false; } }
 
-		internal virtual Variable AsVariable () {
-			throw new CompileException("Expected a variable identifier.", _position);
-		}
+    internal Position Position { get { return _position; } set { _position = value; } }
 
-		internal abstract Value Evaluate (Compiler compiler);
+    internal virtual Variable AsVariable () {
+      throw new CompileException("Expected a variable identifier.", _position);
+    }
 
-		private static ValueRecipe _groupParser (Reader reader) {
-			ValueRecipe res;
+    internal abstract Value Evaluate (Compiler compiler);
 
-			reader.Read();
-			reader.Skip(" \t\n");
-			res = ValueRecipeParser.Parse(reader);
-			reader.Skip(" \t\n");
-			reader.Assert(')');
-			return res;
-		}
-	}
+    private static ValueRecipe _keywordParser (Reader reader) {
+      Position position;
+      string key;
+      List<ValueRecipe> args;
+      Tuple<string, int> sig;
+      Variable current;
+      ValueRecipe auto;
+
+      position = reader.Position;
+      key = reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789");
+
+      reader.Skip(" \t");
+
+      if (reader.Match("(")) {
+        args = new List<ValueRecipe>();
+
+        do {
+          reader.Read();
+          reader.Skip(" \t\n");
+          args.Add(ValueRecipeParser.Parse(reader));
+          reader.Skip(" \t");
+        } while (reader.Match(","));
+        reader.Assert(')');
+
+        sig = new Tuple<string, int>(key, args.Count);
+
+        if (Instruction.Instructions.ContainsKey(sig)) {
+          throw new CompileException("Unkown instruction \"" + key + "\" that takes " + args.Count + " arguments.", position);
+        }
+
+        return new Command(position, Instruction.Instructions[sig], args.ToArray());
+      }
+
+      if (Auto.Autos.ContainsKey(key)) {
+        auto = Auto.Autos[key];
+        auto.Position = position;
+        return auto;
+      }
+
+      current = new Variable(position, key, null);
+
+      if (reader.Match(".")) {
+        do {
+          reader.Read();
+          current = new Variable(position, reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789"), current);
+        } while (reader.Match("."));
+      }
+
+      return current;
+    }
+
+    private static ValueRecipe _groupedParser (Reader reader) {
+      ValueRecipe res;
+
+      reader.Read();
+      reader.Skip(" \t\n");
+      res = ValueRecipeParser.Parse(reader);
+      reader.Skip(" \t\n");
+      reader.Assert(')');
+      return res;
+    }
+  }
 }

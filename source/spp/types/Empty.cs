@@ -4,12 +4,12 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal class Empty : Value {
-		internal Empty (Position position) : base(position) {}
+  internal class Empty : Value {
+    internal Empty () {}
 
-		internal override TextWriter Stringify (TextWriter buffer, bool root) {
-			buffer.Write("null");
-			return buffer;
-		}
-	}
+    internal override TextWriter Stringify (TextWriter writer, bool root) {
+      writer.Write("null");
+      return writer;
+    }
+  }
 }

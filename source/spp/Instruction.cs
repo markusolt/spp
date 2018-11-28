@@ -6,270 +6,224 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal struct Instruction {
-		internal Func<Compiler, Variable[], ValueRecipe[], Value> Function;
-		internal int VariableCount;
-		internal int ValueCount;
+  internal class Instruction {
+    private Func<Compiler, ValueRecipe[], Value> _advancedFunction;
+    private Func<Compiler, Value, Value, Value> _simpleFunction;
+    private int _argumentCount;
+    private bool _isAdvanced;
 
-		internal static readonly Dictionary<string, Instruction> Root = new Dictionary<string, Instruction>() {
-			{"warning",  new Instruction(_warn,     0, 1)},
-			{"error",    new Instruction(_error,    0, 1)},
-			{"try",      new Instruction(_try,      0, 1)},
-			{"let",      new Instruction(_let,      1, 1)},
-			{"input",    new Instruction(_input,    0, 1)},
-			{"cdinput",  new Instruction(_cdinput,  0, 1)},
-			{"output",   new Instruction(_output,   0, 1)},
-			{"cdoutput", new Instruction(_cdoutput, 0, 1)},
-			{"close",    new Instruction(_close,    0, 0)},
-			{"for",      new Instruction(_for,      1, 2)},
-			{"if",       new Instruction(_if,       0, 2)},
-			{"not",      new Instruction(_not,      0, 1)},
-			{"equals",   new Instruction(_equals,   0, 2)},
-			{"loadtext", new Instruction(_loadText, 0, 1)},
-			{"loadjson", new Instruction(_loadJson, 0, 1)},
-			{"files",    new Instruction(_files,    0, 1)},
-			{"where",    new Instruction(_where,    1, 2)},
-			{"push",     new Instruction(_push,     0, 2)},
-			{"get",      new Instruction(_get,      0, 2)}
+    internal static readonly Dictionary<Tuple<string, int>, Instruction> Instructions = new Dictionary<Tuple<string, int>, Instruction>() {
+      {new Tuple<string, int>("cdinput",  1), new Instruction(_cdinput,  1)},
+      {new Tuple<string, int>("cdoutput", 1), new Instruction(_cdoutput, 1)},
+      {new Tuple<string, int>("close",    0), new Instruction(_close,    0)},
+      {new Tuple<string, int>("error",    1), new Instruction(_error,    1)},
+      {new Tuple<string, int>("files",    1), new Instruction(_files,    1)},
+      {new Tuple<string, int>("for",      3), new Instruction(_for,      3)},
+      {new Tuple<string, int>("get",      2), new Instruction(_get,      2)},
+      {new Tuple<string, int>("if",       2), new Instruction(_if,       2)},
+      {new Tuple<string, int>("input",    1), new Instruction(_input,    1)},
+      {new Tuple<string, int>("let",      2), new Instruction(_let,      2)},
+      {new Tuple<string, int>("loadjson", 1), new Instruction(_loadJson, 1)},
+      {new Tuple<string, int>("loadtext", 1), new Instruction(_loadText, 1)},
+      {new Tuple<string, int>("not",      1), new Instruction(_not,      1)},
+      {new Tuple<string, int>("output",   1), new Instruction(_output,   1)},
+      {new Tuple<string, int>("push",     2), new Instruction(_push,     2)},
+      {new Tuple<string, int>("warn",     1), new Instruction(_warn,     1)}
 
-		};
+    };
 
-		internal Instruction (Func<Compiler, Variable[], ValueRecipe[], Value> function, int variableCount, int valueCount) {
-			Function = function;
-			VariableCount = variableCount;
-			ValueCount = valueCount;
-		}
+    private Instruction (Func<Compiler, Value, Value, Value> simpleFunction, int argumentCount) {
+      _simpleFunction = simpleFunction;
+      _argumentCount = argumentCount;
+      _isAdvanced = false;
+    }
 
-		private static Value _warn (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value val = values[0].Evaluate(compiler);
+    private Instruction (Func<Compiler, ValueRecipe[], Value> advancedFunction, int argumentCount) {
+      _advancedFunction = advancedFunction;
+      _argumentCount = argumentCount;
+      _isAdvanced = true;
+    }
 
-			Console.WriteLine(val.Position.ToString() + ": Warning: " + val.ToString());
-			return Value.Empty;
-		}
+    internal Value Invoke (Compiler compiler, ValueRecipe[] nodes) {
+      Value v1;
+      Value v2;
 
-		private static Value _error (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value val = values[0].Evaluate(compiler);
+      if (_isAdvanced) {
+        return _advancedFunction(compiler, nodes);
+      }
 
-			throw new CompileException(val.ToString(), val.Position);
-		}
+      if (nodes.Length != _argumentCount) {
+        throw new ArgumentException("Wrong number of arguments!");
+      }
 
-		private static Value _try (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			try {
-				return values[0].Evaluate(compiler);
-			} catch (CompileException e) {
-				Console.WriteLine(e.Position.ToString() + ": Caught: Error: " + e.Message);
-			}
-			return Value.Empty;
-		}
+      v1 = null;
+      v2 = null;
+      if (_argumentCount > 0) {
+        v1 = nodes[0].Evaluate(compiler);
+      }
+      if (_argumentCount > 1) {
+        v1 = nodes[1].Evaluate(compiler);
+      }
 
-		private static Value _let (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value val = values[0].Evaluate(compiler);
+      return _simpleFunction(compiler, v1, v2);
+    }
 
-			variables[0].Set(compiler,val);
-			return Value.Empty;
-		}
+    private static Value _cdinput (Compiler compiler, Value v1, Value v2) {
+      compiler.CdInput = _resolveDirectory(compiler.CdInput, v1.AsString(), v1.Position, false);
+      return Value.Empty;
+    }
 
-		private static Value _for (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value val = values[0].Evaluate(compiler);
-			List<Value> results;
+    private static Value _cdoutput (Compiler compiler, Value v1, Value v2) {
+      compiler.CdOutput = _resolveDirectory(compiler.CdOutput, v1.AsString(), v1.Position, false);
+      return Value.Empty;
+    }
 
-			IEnumerator<Value> enumerator = val.AsEnumerable().GetEnumerator();
-			enumerator.Reset();
+    private static Value _close (Compiler compiler, Value v1, Value v2) {
+      compiler.Writer = null;
+      return Value.Empty;
+    }
 
-			results = new List<Value>();
-			while (enumerator.MoveNext()) {
-				_let(compiler, variables, new ValueRecipe[] {enumerator.Current});
-				results.Add(values[1].Evaluate(compiler));
-			}
+    private static Value _error (Compiler compiler, Value v1, Value v2) {
+      throw new CompileException(v1.ToString(), v1.Position);
+    }
 
-			return new Sequence(default(Position), results);
-		}
+    private static Value _files (Compiler compiler, Value v1, Value v2) {
+      List<Value> files;
 
-		private static string _resolveFile (string basePath, string path, Position position, bool canCreate) {
-			try {
-				path = Path.Combine(basePath, path);
-			} catch (ArgumentException e) {
-				throw new CompileException("Illegal characters in path.", position, e);
-			}
+      files = new List<Value>();
+      foreach (string s in Directory.GetFiles(compiler.CdInput, v1.AsString())) {
+        files.Add(new Text(s));
+      }
 
-			if (!canCreate && !File.Exists(path)) {
-				throw new CompileException("File does not exist.", position);
-			}
+      return new Sequence(files);
+    }
 
-			if (canCreate && !Directory.Exists(Path.GetDirectoryName(path))) {
-				Directory.CreateDirectory(Path.GetDirectoryName(path));
-			}
+    private static Value _for (Compiler compiler, ValueRecipe[] nodes) {
+      foreach (Value step in nodes[1].Evaluate(compiler).AsEnumerable()) {
+        nodes[0].AsVariable().Set(compiler, step);
+        nodes[2].Evaluate(compiler);
+      }
+      return Value.Empty;
+    }
 
-			return path;
-		}
+    private static Value _get (Compiler compiler, Value v1, Value v2) {
+      return v1[v2];
+    }
 
-		private static string _resolveDirectory (string basePath, string path, Position position, bool canCreate) {
-			try {
-				path = Path.Combine(basePath, path);
-			} catch (ArgumentException e) {
-				throw new CompileException("Illegal characters in path.", position, e);
-			}
+    private static Value _if (Compiler compiler, ValueRecipe[] nodes) {
+      if (nodes[0].Evaluate(compiler).AsBool()) {
+        return nodes[1].Evaluate(compiler);
+      }
+      return Value.Empty;
+    }
 
-			if (!canCreate && !Directory.Exists(path)) {
-				throw new CompileException("Directory does not exist.", position);
-			}
+    private static Value _input (Compiler compiler, Value v1, Value v2) {
+      string filePath;
+      string oldCdInput;
 
-			return path;
-		}
+      filePath = _resolveFile(compiler.CdInput, v1.AsString(), v1.Position, false);
+      oldCdInput = compiler.CdInput;
 
-		private static Value _cdinput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			string path;
+      compiler.CdInput = Path.GetDirectoryName(filePath);
+      compiler.CompileInsert(filePath);
 
-			path = _resolveDirectory(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
+      compiler.CdInput = oldCdInput;
+      return Value.Empty;
+    }
 
-			compiler.CdInput = path;
-			return new Text(default(Position), path);
-		}
+    private static Value _loadJson (Compiler compiler, Value v1, Value v2) {
+      string filePath;
+      Reader reader;
+      Position position;
+      Value res;
 
-		private static Value _input (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			string filePath;
-			string oldCdInput;
+      filePath = _resolveFile(compiler.CdInput, v1.AsString(), v1.Position, false);
 
-			filePath = _resolveFile(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
+      reader = new Reader(new StreamReader(filePath), filePath);
+      position = reader.Position;
+      switch (reader.Peek()) {
+        case '{': {
+          res = MapRecipe.Parser.Parse(reader).Evaluate(compiler);
+          reader.Dispose();
+          return res;
+        }
+        case '[': {
+          res = SequenceRecipe.Parser.Parse(reader).Evaluate(compiler);
+          reader.Dispose();
+          return res;
+        }
+        default: {
+          reader.Dispose();
+          throw new CompileException("Expected Json.", position);
+        }
+      }
+    }
 
-			oldCdInput = compiler.CdInput;
-			compiler.CdInput = Path.GetDirectoryName(filePath);
+    private static Value _loadText (Compiler compiler, Value v1, Value v2) {
+      StreamReader reader;
+      string contents;
 
-			compiler.CompileInsert(filePath);
+      reader = new StreamReader(_resolveFile(compiler.CdInput, v1.AsString(), v1.Position, false));
+      contents = reader.ReadToEnd().Trim();
+      reader.Dispose();
 
-			compiler.CdInput = oldCdInput;
-			return new Text(default(Position), filePath);
-		}
+      return new Text(contents);
+    }
 
-		private static Value _cdoutput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			string path;
+    private static Value _not (Compiler compiler, Value v1, Value v2) {
+      return new Bool(!(v1.AsBool()));
+    }
 
-			path = _resolveDirectory(compiler.CdOutput, values[0].Evaluate(compiler).AsString(), values[0].Position, true);
+    private static Value _output (Compiler compiler, Value v1, Value v2) {
+      compiler.Writer = new StreamWriter(_resolveFile(compiler.CdOutput, v1.AsString(), v1.Position, true), false, new UTF8Encoding(true));
+      return Value.Empty;
+    }
 
-			compiler.CdOutput = path;
-			return new Text(default(Position), path);
-		}
+    private static Value _let (Compiler compiler, ValueRecipe[] nodes) {
+      nodes[0].AsVariable().Set(compiler, nodes[1].Evaluate(compiler));
+      return Value.Empty;
+    }
 
-		private static Value _output (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			string filePath;
+     private static Value _push (Compiler compiler, Value v1, Value v2) {
+      v1.Push(v2);
+      return Value.Empty;
+    }
 
-			filePath = _resolveFile(compiler.CdOutput, values[0].Evaluate(compiler).AsString(), values[0].Position, true);
+    private static Value _warn (Compiler compiler, Value v1, Value v2) {
+      Console.WriteLine(v1.Position.ToString() + ": Warning: " + v1.ToString());
+      return Value.Empty;
+    }
 
-			// qlikview requires its xml files to be utf8-bom -> UTF8Encoding(true)
-			compiler.Writer = new StreamWriter(filePath, false, new UTF8Encoding(true));
-			return new Text(default(Position), filePath);
-		}
+    private static string _resolveDirectory (string basePath, string path, Position position, bool canCreate) {
+      try {
+        path = Path.Combine(basePath, path);
+      } catch (ArgumentException e) {
+        throw new CompileException("Illegal characters in path.", position, e);
+      }
 
-		private static Value _close (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			compiler.Writer = null;
-			return Value.Empty;
-		}
+      if (!canCreate && !Directory.Exists(path)) {
+        throw new CompileException("Directory does not exist.", position);
+      }
 
-		private static Value _if (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			bool b1 = values[0].Evaluate(compiler).AsBool();
+      return path;
+    }
 
-			if (b1) {
-				return values[1].Evaluate(compiler);
-			}
-			return Value.Empty;
-		}
+    private static string _resolveFile (string basePath, string path, Position position, bool canCreate) {
+      try {
+        path = Path.Combine(basePath, path);
+      } catch (ArgumentException e) {
+        throw new CompileException("Illegal characters in path.", position, e);
+      }
 
-		private static Value _not (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			bool v1 = values[0].Evaluate(compiler).AsBool();
+      if (!canCreate && !File.Exists(path)) {
+        throw new CompileException("File does not exist.", position);
+      }
 
-			return new Bool(default(Position), !v1);
-		}
+      if (canCreate && !Directory.Exists(Path.GetDirectoryName(path))) {
+        Directory.CreateDirectory(Path.GetDirectoryName(path));
+      }
 
-		private static Value _always (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			return new Bool(default(Position), true);
-		}
-
-		private static Value _never (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			return new Bool(default(Position), false);
-		}
-
-		private static Value _equals (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value v1 = values[0].Evaluate(compiler);
-			Value v2 = values[1].Evaluate(compiler);
-
-			return new Bool(default(Position), v1.ToString() == v2.ToString());
-		}
-
-		private static Value _loadText (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			string filePath;
-			StreamReader reader;
-			string contents;
-
-			filePath = _resolveFile(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
-
-			reader = new StreamReader(filePath);
-			contents = reader.ReadToEnd().Trim();
-			reader.Dispose();
-
-			return new Text(default(Position), contents);
-		}
-
-		private static Value _loadJson (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			string filePath;
-			Reader reader;
-			Position position;
-			Value res;
-
-			filePath = _resolveFile(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
-
-			reader = new Reader(new StreamReader(filePath), filePath);
-			position = reader.Position;
-			switch (reader.Peek()) {
-				case '{': {
-					res = MapRecipe.Parser.Parse(reader).Evaluate(compiler);
-					reader.Dispose();
-					return res;
-				}
-				case '[': {
-					res = SequenceRecipe.Parser.Parse(reader).Evaluate(compiler);
-					reader.Dispose();
-					return res;
-				}
-				default: {
-					reader.Dispose();
-					throw new CompileException("Expected Json.", position);
-				}
-			}
-		}
-
-		private static Value _files (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			List<Value> files;
-
-			files = new List<Value>();
-			foreach (string s in Directory.GetFiles(compiler.CdInput, values[0].Evaluate(compiler).AsString())) {
-				files.Add(new Text(default(Position), s));
-			}
-
-			return new Sequence(default(Position), files);
-		}
-
-		private static Value _where (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value v1 = values[0].Evaluate(compiler);
-
-			_let(compiler, variables, new ValueRecipe[] {v1});
-
-			values[1].Evaluate(compiler);
-			return Value.Empty;
-		}
-
-		private static Value _push (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value v1 = values[0].Evaluate(compiler);
-			Value v2 = values[1].Evaluate(compiler);
-
-			v1.Push(v2);
-			return v1;
-		}
-
-		private static Value _get (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			Value v1 = values[0].Evaluate(compiler);
-			Value v2 = values[1].Evaluate(compiler);
-
-			return v1[v2];
-		}
-	}
+      return path;
+    }
+  }
 }

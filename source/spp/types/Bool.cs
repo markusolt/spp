@@ -4,20 +4,24 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-	internal class Bool : Value {
-		private bool _payload;
+  internal class Bool : Value {
+    private bool _payload;
 
-		internal Bool (Position position, bool payload) : base(position) {
-			_payload = payload;
-		}
+    internal Bool (bool payload) {
+      _payload = payload;
+    }
 
-		internal override bool IsBool { get { return true; } }
+    internal Bool (Position position, bool payload) : base(position) {
+      _payload = payload;
+    }
 
-		internal override bool AsBool () { return _payload; }
+    internal override bool IsBool { get { return true; } }
 
-		internal override TextWriter Stringify (TextWriter buffer, bool root) {
-			buffer.Write(_payload ? "true" : "false");
-			return buffer;
-		}
-	}
+    internal override bool AsBool () { return _payload; }
+
+    internal override TextWriter Stringify (TextWriter writer, bool root) {
+      writer.Write(_payload ? "true" : "false");
+      return writer;
+    }
+  }
 }
