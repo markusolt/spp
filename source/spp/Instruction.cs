@@ -22,15 +22,12 @@ namespace Spp {
 			{"cdoutput", new Instruction(_cdoutput, 0, 1)},
 			{"close",    new Instruction(_close,    0, 0)},
 			{"for",      new Instruction(_for,      1, 2)},
-			{"add",      new Instruction(_add,      0, 2)},
 			{"if",       new Instruction(_if,       0, 2)},
-			{"always",   new Instruction(_always,   0, 0)},
-			{"never",    new Instruction(_never,    0, 0)},
+			{"not",      new Instruction(_not,      0, 1)},
 			{"equals",   new Instruction(_equals,   0, 2)},
 			{"loadtext", new Instruction(_loadText, 0, 1)},
 			{"loadjson", new Instruction(_loadJson, 0, 1)},
-			{"find",     new Instruction(_find,     0, 1)},
-			{"contains", new Instruction(_contains, 0, 2)},
+			{"files",    new Instruction(_files,    0, 1)},
 			{"where",    new Instruction(_where,    1, 2)},
 			{"push",     new Instruction(_push,     0, 2)}
 
@@ -130,10 +127,16 @@ namespace Spp {
 
 		private static Value _input (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string filePath;
+			string oldCdInput;
 
 			filePath = _resolveFile(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
 
+			oldCdInput = compiler.CdInput;
+			compiler.CdInput = Path.GetDirectoryName(filePath);
+
 			compiler.CompileInsert(filePath);
+
+			compiler.CdInput = oldCdInput;
 			return new Text(default(Position), filePath);
 		}
 
@@ -161,13 +164,6 @@ namespace Spp {
 			return Value.Empty;
 		}
 
-		private static Value _add (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			int i1 = values[0].Evaluate(compiler).AsInt();
-			int i2 = values[1].Evaluate(compiler).AsInt();
-
-			return new Num(default(Position), i1 + i2);
-		}
-
 		private static Value _if (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			bool b1 = values[0].Evaluate(compiler).AsBool();
 
@@ -175,6 +171,12 @@ namespace Spp {
 				return values[1].Evaluate(compiler);
 			}
 			return Value.Empty;
+		}
+
+		private static Value _not (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			bool v1 = values[0].Evaluate(compiler).AsBool();
+
+			return new Bool(default(Position), !v1);
 		}
 
 		private static Value _always (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
@@ -234,7 +236,7 @@ namespace Spp {
 			}
 		}
 
-		private static Value _find (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+		private static Value _files (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			List<Value> files;
 
 			files = new List<Value>();
@@ -243,20 +245,6 @@ namespace Spp {
 			}
 
 			return new Sequence(default(Position), files);
-		}
-
-		private static Value _contains (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
-			string v2 = values[1].Evaluate(compiler).ToString();
-			IEnumerator<Value> enumerator = values[0].Evaluate(compiler).AsEnumerable().GetEnumerator();
-			Value e;
-
-			while (enumerator.MoveNext()) {
-				e = enumerator.Current;
-				if (e.ToString() == v2) {
-					return new Bool(default(Position), true);
-				}
-			}
-			return new Bool(default(Position), false);
 		}
 
 		private static Value _where (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
