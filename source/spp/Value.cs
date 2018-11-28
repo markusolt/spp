@@ -27,6 +27,8 @@ namespace Spp {
 
 		internal virtual bool IsEnumerable { get { return false; } }
 
+		internal virtual bool IsKeyValue { get { return false; } }
+
 		internal override Value Evaluate (Compiler compiler) { return this; }
 
 		internal virtual Value Copy () { return this; }
@@ -45,6 +47,14 @@ namespace Spp {
 
 		internal virtual IEnumerable<Value> AsEnumerable () {
 			throw new CompileException("Expected a list.", _position);
+		}
+
+		internal virtual KeyValue AsKeyValue () {
+			throw new CompileException("Expected a key value pair.", _position);
+		}
+
+		internal virtual void Push (Value entry) {
+			throw new CompileException("Object is not a collection.", _position);
 		}
 
 		internal abstract TextWriter Stringify (TextWriter buffer, bool root);

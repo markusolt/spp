@@ -6,7 +6,7 @@ using Spp;
 
 namespace Spp {
 	internal class Map : Value {
-		private Dictionary<string, Value> _children;
+		protected Dictionary<string, Value> _children;
 
 		internal Map () : base(default(Position)) {
 			_children = new Dictionary<string, Value>();
@@ -33,7 +33,22 @@ namespace Spp {
 
 		internal override bool IsEnumerable { get { return true; } }
 
+		internal override bool IsKeyValue { get { return _children.ContainsKey("key") && _children["key"].IsString && _children.ContainsKey("value"); } }
+
 		internal override IEnumerable<Value> AsEnumerable () { return new EnumerationMap<KeyValuePair<string, Value>, Value>(_children.GetEnumerator(), _enumerationConverter); }
+
+		internal override KeyValue AsKeyValue () {
+			if (IsKeyValue) {
+				return new KeyValue(_position, _children["key"].AsString(), _children["value"]);
+			}
+
+			throw new CompileException("Expected a key value pair.", _position);
+		}
+
+		internal override void Push (Value entry) {
+			KeyValue extension = entry.AsKeyValue();
+			_children[extension.Key] = extension.Value;
+		}
 
 		internal override TextWriter Stringify (TextWriter buffer, bool root) {
 			bool firstIteration;

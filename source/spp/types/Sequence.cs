@@ -16,6 +16,10 @@ namespace Spp {
 
 		internal override IEnumerable<Value> AsEnumerable () { return _children; }
 
+		internal override void Push (Value entry) {
+			_children.Add(entry);
+		}
+
 		internal override TextWriter Stringify (TextWriter buffer, bool root) {
 			bool firstIteration;
 
