@@ -107,8 +107,8 @@ namespace Spp {
 						return;
 					}
 					case '$': {
+						reader.Skip(" \t");
 						ValueRecipe.ValueRecipeParser.Parse(reader).Evaluate(this).Stringify(_writer, true);
-						reader.Assert('$');
 						break;
 					}
 					default: {

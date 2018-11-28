@@ -141,8 +141,8 @@ namespace Spp {
 							list.Add(new Text(rootPos, buffer.ToString()));
 							buffer.Clear();
 						}
+						reader.Skip(" \t");
 						list.Add(ValueRecipe.ValueRecipeParser.Parse(reader));
-						reader.Assert('$');
 						break;
 					}
 					default: {
