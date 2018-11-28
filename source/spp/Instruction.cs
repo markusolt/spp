@@ -31,7 +31,8 @@ namespace Spp {
 			{"loadjson", new Instruction(_loadJson, 0, 1)},
 			{"find",     new Instruction(_find,     0, 1)},
 			{"contains", new Instruction(_contains, 0, 2)},
-			{"where",    new Instruction(_where,    1, 2)}
+			{"where",    new Instruction(_where,    1, 2)},
+			{"push",     new Instruction(_push,     0, 2)}
 
 		};
 
@@ -265,6 +266,14 @@ namespace Spp {
 
 			values[1].Evaluate(compiler);
 			return Value.Empty;
+		}
+
+		private static Value _push (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			Value v1 = values[0].Evaluate(compiler);
+			Value v2 = values[1].Evaluate(compiler);
+
+			v1.Push(v2);
+			return v1;
 		}
 	}
 }
