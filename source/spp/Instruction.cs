@@ -29,7 +29,8 @@ namespace Spp {
 			{"loadjson", new Instruction(_loadJson, 0, 1)},
 			{"files",    new Instruction(_files,    0, 1)},
 			{"where",    new Instruction(_where,    1, 2)},
-			{"push",     new Instruction(_push,     0, 2)}
+			{"push",     new Instruction(_push,     0, 2)},
+			{"get",      new Instruction(_get,      0, 2)}
 
 		};
 
@@ -262,6 +263,13 @@ namespace Spp {
 
 			v1.Push(v2);
 			return v1;
+		}
+
+		private static Value _get (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			Value v1 = values[0].Evaluate(compiler);
+			Value v2 = values[1].Evaluate(compiler);
+
+			return v1[v2];
 		}
 	}
 }
