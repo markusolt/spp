@@ -33,7 +33,7 @@ namespace Spp {
       Position position;
       string key;
       List<ValueRecipe> args;
-      Tuple<string, int> sig;
+      Signature sig;
       Variable current;
       ValueRecipe auto;
 
@@ -53,9 +53,9 @@ namespace Spp {
         } while (reader.Match(","));
         reader.Assert(')');
 
-        sig = new Tuple<string, int>(key, args.Count);
+        sig = new Signature(key.ToLower(), args.Count);
 
-        if (Instruction.Instructions.ContainsKey(sig)) {
+        if (!Instruction.Instructions.ContainsKey(sig)) {
           throw new CompileException("Unkown instruction \"" + key + "\" that takes " + args.Count + " arguments.", position);
         }
 

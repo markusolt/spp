@@ -12,24 +12,23 @@ namespace Spp {
     private int _argumentCount;
     private bool _isAdvanced;
 
-    internal static readonly Dictionary<Tuple<string, int>, Instruction> Instructions = new Dictionary<Tuple<string, int>, Instruction>() {
-      {new Tuple<string, int>("cdinput",  1), new Instruction(_cdinput,  1)},
-      {new Tuple<string, int>("cdoutput", 1), new Instruction(_cdoutput, 1)},
-      {new Tuple<string, int>("close",    0), new Instruction(_close,    0)},
-      {new Tuple<string, int>("error",    1), new Instruction(_error,    1)},
-      {new Tuple<string, int>("files",    1), new Instruction(_files,    1)},
-      {new Tuple<string, int>("for",      3), new Instruction(_for,      3)},
-      {new Tuple<string, int>("get",      2), new Instruction(_get,      2)},
-      {new Tuple<string, int>("if",       2), new Instruction(_if,       2)},
-      {new Tuple<string, int>("input",    1), new Instruction(_input,    1)},
-      {new Tuple<string, int>("let",      2), new Instruction(_let,      2)},
-      {new Tuple<string, int>("loadjson", 1), new Instruction(_loadJson, 1)},
-      {new Tuple<string, int>("loadtext", 1), new Instruction(_loadText, 1)},
-      {new Tuple<string, int>("not",      1), new Instruction(_not,      1)},
-      {new Tuple<string, int>("output",   1), new Instruction(_output,   1)},
-      {new Tuple<string, int>("push",     2), new Instruction(_push,     2)},
-      {new Tuple<string, int>("warn",     1), new Instruction(_warn,     1)}
-
+    internal static readonly Dictionary<Signature, Instruction> Instructions = new Dictionary<Signature, Instruction>() {
+      {new Signature("cdinput",  1), new Instruction(_cdinput,  1)},
+      {new Signature("cdoutput", 1), new Instruction(_cdoutput, 1)},
+      {new Signature("close",    0), new Instruction(_close,    0)},
+      {new Signature("error",    1), new Instruction(_error,    1)},
+      {new Signature("files",    1), new Instruction(_files,    1)},
+      {new Signature("for",      3), new Instruction(_for,      3)},
+      {new Signature("get",      2), new Instruction(_get,      2)},
+      {new Signature("if",       2), new Instruction(_if,       2)},
+      {new Signature("input",    1), new Instruction(_input,    1)},
+      {new Signature("let",      2), new Instruction(_let,      2)},
+      {new Signature("loadjson", 1), new Instruction(_loadJson, 1)},
+      {new Signature("loadtext", 1), new Instruction(_loadText, 1)},
+      {new Signature("not",      1), new Instruction(_not,      1)},
+      {new Signature("output",   1), new Instruction(_output,   1)},
+      {new Signature("push",     2), new Instruction(_push,     2)},
+      {new Signature("warn",     1), new Instruction(_warn,     1)}
     };
 
     private Instruction (Func<Compiler, Value, Value, Value> simpleFunction, int argumentCount) {
