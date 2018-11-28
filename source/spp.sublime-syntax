@@ -5,55 +5,127 @@ file_extensions: [spp]
 scope: source.spp
 contexts:
   main:
-    - match: '^(?>\s*)(?!#)'
-      push: content
-    - match: '(?i)(warning|error|try|let|input|cdinput|output|cdoutput|close|for)'
-      scope: keyword.control
-    - include: value
-  content:
+    - match: '(?>^[ \t]*)#'
+      scope: keyword.operator.instruction.begin.spp
+      set:
+        - instruction
+        - value
+    - match: '\$\$'
+      scope: constant.character.escape.spp
+    - match: '\$'
+      scope: keyword.operator.insert.spp
+      push: value
+  value:
+    - match: '(?=\))'
+      pop: true
+    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*(?=[ \t]*\()'
+      scope: variable.function.spp
+      set: arguments
+    - match: '(?i)(true|false)'
+      scope: constant.language.spp
+      pop: true
+    - include: variable
+    - match: '[0-9]+'
+      scope: constant.numeric.integer.decimal.spp
+      pop: true
+    - match: '"'
+      scope: punctuation.definition.string.begin.spp
+      set: string
+    - match: '{'
+      scope: punctuation.section.object.begin.spp
+      set:
+        - object
+        - value
+        - assign
+        - key
+    - match: '\['
+      scope: punctuation.section.array.begin.spp
+      set:
+        - array
+        - value
+    - match: \(
+      scope: punctuation.section.group.begin.spp
+      set:
+        - group
+        - value
+  instruction:
+    - match: '[ \t]+'
     - match: '$'
       pop: true
-    - include: string_content
-  string_content:
-    - match: '\$\$'
-      scope: constant.character.escape
-    - match: '\$'
-      scope: punctuation.accessor
-      push: value_inline
-  value_inline:
-    - match: '\$'
-      scope: punctuation.accessor
+    - match: '.'
+      scope: invalid.illegal
+  members:
+    - match: \.
+      scope: punctuation.accessor.dot.spp
+    - include: variable
+    - match: ''
       pop: true
-    - include: value
-  value:
-    - match: ':[a-zA-Z]+'
-      scope: variable.language
-    - match: '[a-zA-Z_][a-zA-Z_0-9]*'
-      scope: entity.name.function
-    - match: '[0-9]+'
-      scope: constant.numeric.interger
+  string:
+    - meta_content_scope: string.quoted.double.spp
     - match: '"'
-      scope: punctuation.definition.string.begin
-      push: string_quoted
-    - match: '\.\.'
-      scope: keyword.operator
-    - match: '\.'
-      scope: punctuation.accessor
-    - match: '\[|\]'
-      scope: punctuation.accessor
-    - match: '{}'
-      scope: punctuation.accessor
-    - match: ','
-      scope: punctuation.accessor
-  string_quoted:
-    - meta_content_scope: string.quoted.double
-    - match: '"'
-      scope: punctuation.definition.string.end
+      scope: punctuation.definition.string.end.spp
       pop: true
-    - match: '\n'
-      scope: invalid.illegal.unclosed_string
-    - match: '\\("|\$|\\|/|r|n|t|f)'
-      scope: constant.character.escape
+    - match: '\$'
+      scope: keyword.operator.insert.spp
+      push: value
+    - match: '\\(r|n|\\|\$|"|/|t|f)'
+      scope: constant.character.escape.spp
     - match: '\\.?'
-      scope: invalid.illegal.unknown_escape
-    - include: string_content
+      scope: invalid.illegal.escape
+    - match: '\n'
+      scope: invalid.illegal.unclosed-string
+      pop: true
+  key:
+    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
+      scope: string.quoted.double.spp
+      pop: true
+    - match: '"[a-zA-Z_](?>[a-zA-Z_\-0-9]*)"'
+      scope: string.quoted.double.spp
+      pop: true
+  assign:
+    - match: ':'
+      scope: punctuation.seperator.key-value.spp
+      pop: true
+  object:
+    - meta_content_scope: meta.group.object.spp
+    - match: '}'
+      scope: punctuation.section.object.end.spp
+      pop: true
+    - match: ','
+      scope: punctuation.seperator.object-element.spp
+      push:
+        - value
+        - assign
+        - key
+  array:
+    - meta_content_scope: meta.group.array.spp
+    - match: ']'
+      scope: punctuation.section.array.end.spp
+      pop: true
+    - match: ','
+      scope: punctuation.seperator.array-element.spp
+      push: value
+  group:
+    - meta_content_scope: meta.group.spp
+    - match: \)
+      scope: punctuation.section.group.end.spp
+      pop: true
+  arguments:
+    - match: \(
+      scope: punctuation.section.group.begin.spp
+      push:
+        - arguments_list
+        - value
+  arguments_list:
+    - match: ','
+      push: value
+    - match: \)
+      scope: punctuation.section.group.end.spp
+      pop: true
+  variable:
+    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*(?=\.)'
+      scope: variable.parameter.spp
+      set: members
+    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
+      scope: variable.parameter.spp
+      pop: true
