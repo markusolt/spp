@@ -44,14 +44,19 @@ namespace Spp {
 
       if (reader.Match("(")) {
         args = new List<ValueRecipe>();
+        reader.Read();
+        reader.Skip(" \t\n");
 
-        do {
-          reader.Read();
-          reader.Skip(" \t\n");
+        while(!reader.Match(")")) {
           args.Add(ValueRecipeParser.Parse(reader));
-          reader.Skip(" \t");
-        } while (reader.Match(","));
-        reader.Assert(')');
+          reader.Skip(" \t\n");
+          if (reader.Match(")")) {
+            break;
+          }
+          reader.Assert(',');
+          reader.Skip(" \t\n");
+        }
+        reader.Read();
 
         sig = new Signature(key.ToLower(), args.Count);
 

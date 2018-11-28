@@ -18,6 +18,10 @@ contexts:
   value:
     - match: '(?=\))'
       pop: true
+    - match: '(?=})'
+      pop: true
+    - match: '(?=])'
+      pop: true
     - match: '[a-zA-Z_][a-zA-Z_\-0-9]*(?=[ \t]*\()'
       scope: variable.function.spp
       set: arguments
@@ -76,6 +80,8 @@ contexts:
       scope: invalid.illegal.unclosed-string
       pop: true
   key:
+    - match: '(?=})'
+      pop: true
     - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
       scope: string.quoted.double.spp
       pop: true
@@ -83,6 +89,8 @@ contexts:
       scope: string.quoted.double.spp
       pop: true
   assign:
+    - match: '(?=})'
+      pop: true
     - match: ':'
       scope: punctuation.seperator.key-value.spp
       pop: true
