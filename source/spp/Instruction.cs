@@ -26,7 +26,11 @@ namespace Spp {
 			{"if",       new Instruction(_if,       0, 2)},
 			{"always",   new Instruction(_always,   0, 0)},
 			{"never",    new Instruction(_never,    0, 0)},
-			{"equals",   new Instruction(_equals,   0, 2)}
+			{"equals",   new Instruction(_equals,   0, 2)},
+			{"loadtext", new Instruction(_loadText, 0, 1)},
+			{"find",     new Instruction(_find,     0, 1)},
+			{"contains", new Instruction(_contains, 0, 2)},
+
 		};
 
 		internal Instruction (Func<Compiler, Variable[], ValueRecipe[], Value> function, int variableCount, int valueCount) {
@@ -78,34 +82,42 @@ namespace Spp {
 			return Value.Empty;
 		}
 
-		private static string _resolvePath (string basePath, string filePath, Position position, bool canCreate) {
+		private static string _resolveFile (string basePath, string path, Position position, bool canCreate) {
 			try {
-				filePath = Path.Combine(basePath, filePath);
+				path = Path.Combine(basePath, path);
 			} catch (ArgumentException e) {
 				throw new CompileException("Illegal characters in path.", position, e);
 			}
 
-			if (!canCreate && !File.Exists(filePath)) {
+			if (!canCreate && !File.Exists(path)) {
 				throw new CompileException("File does not exist.", position);
 			}
 
-			return filePath;
+			if (canCreate && !Directory.Exists(Path.GetDirectoryName(path))) {
+				Directory.CreateDirectory(Path.GetDirectoryName(path));
+			}
+
+			return path;
+		}
+
+		private static string _resolveDirectory (string basePath, string path, Position position, bool canCreate) {
+			try {
+				path = Path.Combine(basePath, path);
+			} catch (ArgumentException e) {
+				throw new CompileException("Illegal characters in path.", position, e);
+			}
+
+			if (!canCreate && !Directory.Exists(path)) {
+				throw new CompileException("Directory does not exist.", position);
+			}
+
+			return path;
 		}
 
 		private static Value _cdinput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string path;
 
-			Value val = values[0].Evaluate(compiler);
-
-			try {
-				path = Path.GetFullPath(Path.Combine(compiler.CdInput, val.AsString()));
-			} catch (ArgumentException e) {
-				throw new CompileException("Illegal characters in path.", val.Position, e);
-			}
-
-			if (!Directory.Exists(path)) {
-				throw new CompileException("Directory does not exist.", val.Position);
-			}
+			path = _resolveDirectory(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
 
 			compiler.CdInput = path;
 			return new Text(default(Position), path);
@@ -114,7 +126,7 @@ namespace Spp {
 		private static Value _input (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string filePath;
 
-			filePath = _resolvePath(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
+			filePath = _resolveFile(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
 
 			compiler.CompileInsert(filePath);
 			return new Text(default(Position), filePath);
@@ -123,17 +135,7 @@ namespace Spp {
 		private static Value _cdoutput (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string path;
 
-			Value val = values[0].Evaluate(compiler);
-
-			try {
-				path = Path.GetFullPath(Path.Combine(compiler.CdOutput, val.AsString()));
-			} catch (ArgumentException e) {
-				throw new CompileException("Illegal characters in path.", val.Position, e);
-			}
-
-			if (!Directory.Exists(path)) {
-				throw new CompileException("Directory does not exist.", val.Position);
-			}
+			path = _resolveDirectory(compiler.CdOutput, values[0].Evaluate(compiler).AsString(), values[0].Position, true);
 
 			compiler.CdOutput = path;
 			return new Text(default(Position), path);
@@ -142,7 +144,7 @@ namespace Spp {
 		private static Value _output (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
 			string filePath;
 
-			filePath = _resolvePath(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, true);
+			filePath = _resolveFile(compiler.CdOutput, values[0].Evaluate(compiler).AsString(), values[0].Position, true);
 
 			// qlikview requires its xml files to be utf8-bom -> UTF8Encoding(true)
 			compiler.Writer = new StreamWriter(filePath, false, new UTF8Encoding(true));
@@ -190,7 +192,7 @@ namespace Spp {
 			StreamReader reader;
 			string contents;
 
-			filePath = _resolvePath(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
+			filePath = _resolveFile(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
 
 			reader = new StreamReader(filePath);
 			contents = reader.ReadToEnd().Trim();
@@ -205,7 +207,7 @@ namespace Spp {
 			Position position;
 			Value res;
 
-			filePath = _resolvePath(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
+			filePath = _resolveFile(compiler.CdInput, values[0].Evaluate(compiler).AsString(), values[0].Position, false);
 
 			reader = new Reader(new StreamReader(filePath), filePath);
 			position = reader.Position;
@@ -225,6 +227,31 @@ namespace Spp {
 					throw new CompileException("Expected Json.", position);
 				}
 			}
+		}
+
+		private static Value _find (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			List<Value> files;
+
+			files = new List<Value>();
+			foreach (string s in Directory.GetFiles(compiler.CdInput, values[0].Evaluate(compiler).AsString())) {
+				files.Add(new Text(default(Position), s));
+			}
+
+			return new Sequence(default(Position), files);
+		}
+
+		private static Value _contains (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			string v2 = values[1].Evaluate(compiler).ToString();
+			IEnumerator<Value> enumerator = values[0].Evaluate(compiler).AsEnumerator();
+			Value e;
+
+			while (enumerator.MoveNext()) {
+				e = enumerator.Current;
+				if (e.ToString() == v2) {
+					return new Bool(default(Position), true);
+				}
+			}
+			return new Bool(default(Position), false);
 		}
 	}
 }
