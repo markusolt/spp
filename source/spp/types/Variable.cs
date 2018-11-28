@@ -9,11 +9,13 @@ namespace Spp {
     private Variable _parent;
 
     internal Variable (Position position, string key, Variable parent) : base(position) {
-      _key = new Text(key);
+      _key = new Text(position, key);
       _parent = parent;
     }
 
     internal Variable (Position position, Value key, Variable parent) : base(position) {
+      key.Position = position;
+
       _key = key;
       _parent = parent;
     }
@@ -25,10 +27,12 @@ namespace Spp {
     }
 
     internal override Value Evaluate (Compiler compiler) {
-      Value parent;
+      Value node;
 
-      parent = _parent == null ? compiler.Variables : _parent.Evaluate(compiler);
-      return parent[_key];
+      node = _parent == null ? compiler.Variables : _parent.Evaluate(compiler);
+      node = node[_key];
+      node.Position = _position;
+      return node;
     }
 
     internal void Set (Compiler compiler, Value payload) {

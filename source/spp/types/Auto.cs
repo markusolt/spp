@@ -18,6 +18,7 @@ namespace Spp {
     }
 
     internal override Value Evaluate (Compiler compiler) {
+      _payload.Position = _position;
       return _payload;
     }
   }

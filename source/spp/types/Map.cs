@@ -26,7 +26,7 @@ namespace Spp {
 
         id = key.AsString();
         if (!_children.ContainsKey(id)) {
-          throw new CompileException("Unkown memer name \"" + id + "\".", key.Position);
+          throw new CompileException("Unkown member name \"" + id + "\".", key.Position);
         }
         return _children[id];
       }
