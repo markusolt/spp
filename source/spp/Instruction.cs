@@ -28,8 +28,10 @@ namespace Spp {
 			{"never",    new Instruction(_never,    0, 0)},
 			{"equals",   new Instruction(_equals,   0, 2)},
 			{"loadtext", new Instruction(_loadText, 0, 1)},
+			{"loadjson", new Instruction(_loadJson, 0, 1)},
 			{"find",     new Instruction(_find,     0, 1)},
 			{"contains", new Instruction(_contains, 0, 2)},
+			{"where",    new Instruction(_where,    1, 2)}
 
 		};
 
@@ -254,6 +256,15 @@ namespace Spp {
 				}
 			}
 			return new Bool(default(Position), false);
+		}
+
+		private static Value _where (Compiler compiler, Variable[] variables, ValueRecipe[] values) {
+			Value v1 = values[0].Evaluate(compiler);
+
+			_let(compiler, variables, new ValueRecipe[] {v1});
+
+			values[1].Evaluate(compiler);
+			return Value.Empty;
 		}
 	}
 }
