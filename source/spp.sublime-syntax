@@ -113,10 +113,11 @@ contexts:
   arguments:
     - match: \(
       scope: punctuation.section.group.begin.spp
-      push:
+      set:
         - arguments_list
         - value
   arguments_list:
+    - meta_content_scope: meta.arguments.spp
     - match: ','
       push: value
     - match: \)
