@@ -61,7 +61,7 @@ namespace Spp {
         v1 = nodes[0].Evaluate(compiler);
       }
       if (_argumentCount > 1) {
-        v1 = nodes[1].Evaluate(compiler);
+        v2 = nodes[1].Evaluate(compiler);
       }
 
       return _simpleFunction(compiler, v1, v2);
