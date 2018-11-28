@@ -28,17 +28,18 @@ namespace Spp {
 		private static ValueRecipe _parse (Reader reader) {
 			Dictionary<string, ValueRecipe> children;
 			string key;
+			Position rootPosition;
 			Position position;
 			bool quotedKey;
 
-			position = reader.Position;
+			rootPosition = reader.Position;
 			reader.Read();
 			children = new Dictionary<string, ValueRecipe>();
 			reader.Skip(" \t\n");
 
 			if (reader.Match("}")) {
 				reader.Read();
-				return new MapRecipe(position, children);
+				return new MapRecipe(rootPosition, children);
 			}
 
 			while (true) {
@@ -70,7 +71,7 @@ namespace Spp {
 				switch (reader.Peek()) {
 					case '}': {
 						reader.Read();
-						return new MapRecipe(position, children);
+						return new MapRecipe(rootPosition, children);
 					}
 					case ',': {
 						reader.Read();

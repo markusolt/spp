@@ -6,7 +6,7 @@ namespace Spp {
 	internal abstract class ValueRecipe {
 		protected Position _position;
 
-		internal static readonly Parser<ValueRecipe> ValueRecipeParser = new ParseGroup<ValueRecipe>("value", new Parser<ValueRecipe>[] {Num.Parser, Text.Parser, Command.Parser, Variable.Parser, MapRecipe.Parser});
+		internal static readonly Parser<ValueRecipe> ValueRecipeParser = new ParseGroup<ValueRecipe>("value", new Parser<ValueRecipe>[] {Num.Parser, Text.Parser, Command.Parser, Variable.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
 
 		protected ValueRecipe (Position position) {
 			_position = position;
