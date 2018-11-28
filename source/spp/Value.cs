@@ -21,6 +21,8 @@ namespace Spp {
 
 		internal virtual bool IsInt { get { return false; } }
 
+		internal virtual bool IsBool { get { return false; } }
+
 		internal virtual bool IsString { get { return false; } }
 
 		internal virtual bool IsEnumerator { get { return false; } }
@@ -31,6 +33,10 @@ namespace Spp {
 
 		internal virtual int AsInt () {
 			throw new CompileException("Expected an integer.", _position);
+		}
+
+		internal virtual bool AsBool () {
+			throw new CompileException("Expected a boolean.", _position);
 		}
 
 		internal virtual string AsString () {
