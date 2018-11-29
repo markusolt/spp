@@ -32,6 +32,9 @@ contexts:
     - match: '(?i)(true|false)'
       scope: constant.language.spp
       pop: true
+    - match: \?
+      scope: keyword.operator.nullable.spp
+      set: variable
     - include: variable
     - match: '[0-9]+'
       scope: constant.numeric.integer.decimal.spp
@@ -62,12 +65,18 @@ contexts:
     - match: '[ \t]+'
     - match: '.'
       scope: invalid.illegal
-  members:
+  member_list:
     - match: \.
       scope: punctuation.accessor.dot.spp
-    - include: variable
+      push: member
     - match: ''
       pop: true
+  member:
+    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
+      scope: variable.parameter.spp
+      pop: true
+    - match: '[^a-zA-Z_]+'
+      scope: invalid.illegal.missing-member.spp
   string:
     - meta_content_scope: string.quoted.double.spp
     - match: '"'
@@ -140,7 +149,7 @@ contexts:
   variable:
     - match: '[a-zA-Z_][a-zA-Z_\-0-9]*(?=\.)'
       scope: variable.parameter.spp
-      set: members
+      set: member_list
     - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
       scope: variable.parameter.spp
       pop: true
