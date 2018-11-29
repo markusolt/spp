@@ -19,6 +19,35 @@ namespace Spp {
       _payload = payload;
     }
 
+    internal override Value this[Value key] {
+      get {
+        switch (key.AsString().ToLower()) {
+          case "filename": {
+            try {
+              return new Text(Path.GetFileName(_payload));
+            } catch (ArgumentException e) {
+              throw new CompileException("Invalid characters in path.", _position, e);
+            }
+          }
+          case "basename": {
+            try {
+              return new Text(Path.GetFileNameWithoutExtension(_payload));
+            } catch (ArgumentException e) {
+              throw new CompileException("Invalid characters in path.", _position, e);
+            }
+          }
+          case "extension": {
+            try {
+              return new Text(Path.GetExtension(_payload));
+            } catch (ArgumentException e) {
+              throw new CompileException("Invalid characters in path.", _position, e);
+            }
+          }
+        }
+        throw new CompileException("Unkown member name \"" + key.AsString() + "\".", key.Position);
+      }
+    }
+
     internal override bool IsString { get { return true; } }
 
     internal override string AsString () { return _payload; }
