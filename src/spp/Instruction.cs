@@ -13,6 +13,7 @@ namespace Spp {
     private bool _isAdvanced;
 
     internal static readonly Dictionary<Signature, Instruction> Instructions = new Dictionary<Signature, Instruction>() {
+      {new Signature("basename",  1), new Instruction(_basename,  1)},
       {new Signature("cdinput",   1), new Instruction(_cdinput,   1)},
       {new Signature("cdoutput",  1), new Instruction(_cdoutput,  1)},
       {new Signature("close",     0), new Instruction(_close,     0)},
@@ -68,6 +69,10 @@ namespace Spp {
       return _simpleFunction(compiler, v1, v2);
     }
 
+    private static Value _basename (Compiler compiler, Value v1, Value v2) {
+      return Value.New(Path.GetFileNameWithoutExtension(v1.AsString()));
+    }
+
     private static Value _cdinput (Compiler compiler, Value v1, Value v2) {
       compiler.CdInput = _resolveDirectory(compiler.CdInput, v1.AsString(), v1.Position, false);
       return Value.Empty;
@@ -92,10 +97,10 @@ namespace Spp {
 
       files = new List<Value>();
       foreach (string s in Directory.GetFiles(compiler.CdInput, v1.AsString())) {
-        files.Add(new Text(s));
+        files.Add(Value.New(s));
       }
 
-      return new Sequence(files);
+      return Value.New(files);
     }
 
     private static Value _for (Compiler compiler, Expression[] nodes) {
@@ -157,11 +162,11 @@ namespace Spp {
       contents = reader.ReadToEnd().Trim();
       reader.Dispose();
 
-      return new Text(contents);
+      return Value.New(contents);
     }
 
     private static Value _not (Compiler compiler, Value v1, Value v2) {
-      return new Bool(!(v1.AsBool()));
+      return Value.New(!(v1.AsBool()));
     }
 
     private static Value _output (Compiler compiler, Value v1, Value v2) {

@@ -1,12 +1,13 @@
 using System;
 using Spp.IO;
+using Spp.Lexing;
 
-namespace Spp.IO {
+namespace Spp.Lexing {
   internal class ParseToken<T> : Parser<T> {
     private string _pattern;
     private Func<Reader, T> _function;
 
-    internal ParseToken (string name, string pattern, Func<Reader, T> function) : base(name) {
+    internal ParseToken (string pattern, Func<Reader, T> function){
       _pattern = pattern;
       _function = function;
     }
@@ -17,7 +18,7 @@ namespace Spp.IO {
 
     internal override T Parse (Reader reader) {
       if (!Match(reader.Peek())) {
-        throw new CompileException("Illegal character " + reader.PrettyPeek() + " in " + _name + ".", reader.Position);
+        throw new CompileException("Illegal character " + reader.PrettyPeek() + ".", reader.Position);
       }
 
       return _function(reader);

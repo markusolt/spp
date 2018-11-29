@@ -16,12 +16,6 @@ namespace Spp.IO {
       _position = pos;
     }
 
-    public Position Position {
-      get {
-        return _position;
-      }
-    }
-
     public override string ToString () {
       return _message;
     }

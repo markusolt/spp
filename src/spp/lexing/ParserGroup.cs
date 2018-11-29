@@ -1,11 +1,12 @@
 using System;
 using Spp.IO;
+using Spp.Lexing;
 
-namespace Spp.IO {
+namespace Spp.Lexing {
   internal class ParseGroup<T> : Parser<T> {
     private Parser<T>[] _alternatives;
 
-    internal ParseGroup (string name, Parser<T>[] alternatives) : base(name) {
+    internal ParseGroup (Parser<T>[] alternatives) {
       _alternatives = alternatives;
     }
 
@@ -28,7 +29,7 @@ namespace Spp.IO {
           return p.Parse(reader);
         }
       }
-      throw new CompileException("Illegal character " + reader.PrettyPeek() + " in " + _name + ".", reader.Position);
+      throw new CompileException("Illegal character " + reader.PrettyPeek() + ".", reader.Position);
     }
   }
 }

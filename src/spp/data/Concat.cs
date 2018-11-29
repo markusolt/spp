@@ -1,9 +1,10 @@
 using System;
 using System.IO;
-using Spp.IO;
 using Spp;
+using Spp.IO;
+using Spp.Data;
 
-namespace Spp {
+namespace Spp.Data {
   internal class Concat : Expression {
     private Expression[] _contents;
 

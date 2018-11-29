@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Spp.IO;
 using Spp;
+using Spp.IO;
+using Spp.Data;
 
-namespace Spp {
+namespace Spp.Data {
   internal class Map : Value {
     protected Dictionary<string, Value> _children;
 
@@ -41,7 +42,7 @@ namespace Spp {
       return key.IsString && _children.ContainsKey(key.AsString());
     }
 
-    internal override IEnumerable<Value> AsEnumerable () { return new EnumerationMap<KeyValuePair<string, Value>, Value>(_children.GetEnumerator(), _enumerationConverter); }
+    internal override IEnumerable<Value> AsEnumerable () { return new EnumerationConverter<KeyValuePair<string, Value>, Value>(_children.GetEnumerator(), _enumerationConverter); }
 
     internal override Map AsKeyValue () {
       if (IsKeyValue) {

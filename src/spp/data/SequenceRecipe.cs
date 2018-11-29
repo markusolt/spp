@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Spp.IO;
 using Spp;
+using Spp.IO;
+using Spp.Lexing;
+using Spp.Data;
 
-namespace Spp {
+namespace Spp.Data {
   internal class SequenceRecipe : Expression {
     private List<Expression> _children;
 
-    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("array", "[", _parse);
+    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("[", _parse);
 
     internal SequenceRecipe (Position position, List<Expression> children) : base(position) {
       _children = children;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Spp.IO;
+using Spp.Data;
 using Spp;
 
 namespace Spp {
@@ -32,6 +33,14 @@ namespace Spp {
     internal virtual bool IsKeyValue { get { return false; } }
 
     internal override Value Evaluate (Compiler compiler) { return this; }
+
+    internal static Value New (bool payload) { return new Bool(payload); }
+
+    internal static Value New (string payload) { return new Text(payload); }
+
+    internal static Value New (List<Value> payload) { return new Sequence(payload); }
+
+    internal static Value NewContainer () { return new Map(); }
 
     internal virtual bool Has (Value key) {
       return false;

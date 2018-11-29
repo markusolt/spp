@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Spp.IO;
 using Spp;
+using Spp.IO;
+using Spp.Lexing;
+using Spp.Data;
 
-namespace Spp {
+namespace Spp.Data {
   internal class MapRecipe : Expression {
     private Dictionary<string, Expression> _children;
 
-    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("object", "{", _parse);
+    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("{", _parse);
 
     internal MapRecipe (Position position, Dictionary<string, Expression> children) : base(position) {
       _children = children;

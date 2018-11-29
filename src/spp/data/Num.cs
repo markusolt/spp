@@ -1,13 +1,15 @@
 using System;
 using System.IO;
-using Spp.IO;
 using Spp;
+using Spp.IO;
+using Spp.Lexing;
+using Spp.Data;
 
-namespace Spp {
+namespace Spp.Data {
   internal class Num : Value {
     private int _payload;
 
-    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("integer", "0123456789", _parse);
+    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("0123456789", _parse);
 
     internal Num (Position position, int payload) : base(position) {
       _payload = payload;

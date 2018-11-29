@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Spp.IO;
 using Spp;
+using Spp.IO;
+using Spp.Data;
 
-namespace Spp {
+namespace Spp.Data {
   internal class Sequence : Value {
     private List<Value> _children;
 

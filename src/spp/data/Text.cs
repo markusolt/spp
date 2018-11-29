@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Spp.IO;
 using Spp;
+using Spp.IO;
+using Spp.Lexing;
+using Spp.Data;
 
-namespace Spp {
+namespace Spp.Data {
   internal class Text : Value {
     private string _payload;
 
-    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("string", "\"", _parse);
+    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("\"", _parse);
 
     internal Text (string payload) {
       _payload = payload;
@@ -20,44 +22,7 @@ namespace Spp {
       _payload = payload;
     }
 
-    internal override Value this[Value key] {
-      get {
-        if (!Has(key)) {
-          throw new CompileException("Unkown member \"" + key.ToString() + "\".", key.Position);
-        }
-
-        switch (key.AsString().ToLower()) {
-          case "filename": {
-            try {
-              return new Text(Path.GetFileName(_payload));
-            } catch (ArgumentException e) {
-              throw new CompileException("Invalid characters in path.", _position, e);
-            }
-          }
-          case "basename": {
-            try {
-              return new Text(Path.GetFileNameWithoutExtension(_payload));
-            } catch (ArgumentException e) {
-              throw new CompileException("Invalid characters in path.", _position, e);
-            }
-          }
-          case "extension": {
-            try {
-              return new Text(Path.GetExtension(_payload));
-            } catch (ArgumentException e) {
-              throw new CompileException("Invalid characters in path.", _position, e);
-            }
-          }
-        }
-        throw new CompileException("Unkown member \"" + key.ToString() + "\".", key.Position);
-      }
-    }
-
     internal override bool IsString { get { return true; } }
-
-    internal override bool Has (Value key) {
-      return key.IsString;
-    }
 
     internal override string AsString () { return _payload; }
 

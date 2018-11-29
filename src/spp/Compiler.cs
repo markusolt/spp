@@ -39,7 +39,7 @@ namespace Spp {
         _writer.Dispose();
         _writer = null;
       }
-      _variables = new Map();
+      _variables = Value.NewContainer();
       _using = null;
       CdInput = Path.GetFullPath(".");
       CdOutput = Path.GetFullPath(".");
