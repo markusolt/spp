@@ -10,12 +10,16 @@ contexts:
       set:
         - instruction
         - value
+    - match: '(?>[ \t]*)--'
+      scope: punctuation.definition.comment.spp
+      push: comment_line
     - match: '\$\$'
       scope: constant.character.escape.spp
     - match: '\$'
       scope: keyword.operator.insert.spp
       push: value
   value:
+    - include: comment
     - match: '(?=\))'
       pop: true
     - match: '(?=})'
@@ -53,9 +57,9 @@ contexts:
         - group
         - value
   instruction:
-    - match: '[ \t]+'
     - match: '$'
       pop: true
+    - match: '[ \t]+'
     - match: '.'
       scope: invalid.illegal
   members:
@@ -115,6 +119,7 @@ contexts:
       push: value
   group:
     - meta_content_scope: meta.group.spp
+    - include: comment
     - match: \)
       scope: punctuation.section.group.end.spp
       pop: true
@@ -126,6 +131,7 @@ contexts:
         - value
   arguments_list:
     - meta_content_scope: meta.arguments.spp
+    - include: comment
     - match: ','
       push: value
     - match: \)
@@ -137,4 +143,12 @@ contexts:
       set: members
     - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
       scope: variable.parameter.spp
+      pop: true
+  comment:
+    - match: '--'
+      scope: punctuation.definition.comment.spp
+      push: comment_line
+  comment_line:
+    - meta_content_scope: comment.line.spp
+    - match: '$'
       pop: true

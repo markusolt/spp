@@ -97,7 +97,11 @@ namespace Spp {
       switch (reader.Peek()) {
         case '#': {
           reader.Read();
-          reader.Skip(" \t");
+          reader.Skip(" \t\n");
+          while (reader.MatchWord("--")) {
+            reader.SkipUntil("\n");
+            reader.Skip(" \t\n");
+          }
           Expression.ExpressionParser.Parse(reader).Evaluate(this);
           reader.Skip(" \t");
           SkipComment(reader);
