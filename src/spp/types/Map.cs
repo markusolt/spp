@@ -22,13 +22,11 @@ namespace Spp {
 
     internal override Value this[Value key] {
       get {
-        string id;
-
-        id = key.AsString();
-        if (!_children.ContainsKey(id)) {
-          throw new CompileException("Unkown member name \"" + id + "\".", key.Position);
+        if (!Has(key)) {
+          throw new CompileException("Unkown member \"" + key.ToString() + "\".", key.Position);
         }
-        return _children[id];
+
+        return _children[key.AsString()];
       }
       set {
         _children[key.AsString()] = value;
@@ -38,6 +36,10 @@ namespace Spp {
     internal override bool IsEnumerable { get { return true; } }
 
     internal override bool IsKeyValue { get { return _children.ContainsKey("key") && _children["key"].IsString && _children.ContainsKey("value"); } }
+
+    internal override bool Has (Value key) {
+      return key.IsString && _children.ContainsKey(key.AsString());
+    }
 
     internal override IEnumerable<Value> AsEnumerable () { return new EnumerationMap<KeyValuePair<string, Value>, Value>(_children.GetEnumerator(), _enumerationConverter); }
 

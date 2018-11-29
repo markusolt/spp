@@ -28,6 +28,7 @@ namespace Spp {
       {new Signature("not",       1), new Instruction(_not,       1)},
       {new Signature("output",    1), new Instruction(_output,    1)},
       {new Signature("push",      2), new Instruction(_push,      2)},
+      {new Signature("using",     2), new Instruction(_using,     2)},
       {new Signature("warn",      1), new Instruction(_warn,      1)}
     };
 
@@ -173,9 +174,22 @@ namespace Spp {
       return Value.Empty;
     }
 
-     private static Value _push (Compiler compiler, Value v1, Value v2) {
+    private static Value _push (Compiler compiler, Value v1, Value v2) {
       v1.Push(v2);
       return Value.Empty;
+    }
+
+    private static Value _using (Compiler compiler, Expression[] nodes) {
+      Value oldUsing;
+      Value result;
+
+      oldUsing = compiler.Using;
+      compiler.Using = nodes[0].Evaluate(compiler);
+
+      result = nodes[1].Evaluate(compiler);
+
+      compiler.Using = oldUsing;
+      return result;
     }
 
     private static Value _warn (Compiler compiler, Value v1, Value v2) {

@@ -28,9 +28,14 @@ namespace Spp {
 
     internal override Value Evaluate (Compiler compiler) {
       Value node;
+      Value nodeSecondary;
+      bool usePrimary;
 
-      node = _parent == null ? compiler.Variables : _parent.Evaluate(compiler);
-      node = node[_key];
+      node = _parent == null ? compiler.Using : _parent.Evaluate(compiler);
+      nodeSecondary = _parent == null ? compiler.Variables : node;
+
+      usePrimary = node != null ? node.Has(_key) : false;
+      node = usePrimary ? node[_key] : nodeSecondary[_key];
       node.Position = _position;
       return node;
     }

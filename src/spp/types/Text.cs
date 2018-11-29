@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Spp.IO;
 using Spp;
@@ -21,6 +22,10 @@ namespace Spp {
 
     internal override Value this[Value key] {
       get {
+        if (!Has(key)) {
+          throw new CompileException("Unkown member \"" + key.ToString() + "\".", key.Position);
+        }
+
         switch (key.AsString().ToLower()) {
           case "filename": {
             try {
@@ -44,11 +49,15 @@ namespace Spp {
             }
           }
         }
-        throw new CompileException("Unkown member name \"" + key.AsString() + "\".", key.Position);
+        throw new CompileException("Unkown member \"" + key.ToString() + "\".", key.Position);
       }
     }
 
     internal override bool IsString { get { return true; } }
+
+    internal override bool Has (Value key) {
+      return key.IsString;
+    }
 
     internal override string AsString () { return _payload; }
 

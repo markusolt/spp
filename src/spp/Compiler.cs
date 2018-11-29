@@ -9,6 +9,7 @@ namespace Spp {
     private StringBuilder _buffer;
     private TextWriter _writer;
     private Value _variables;
+    private Value _using;
 
     internal string CdInput;
     internal string CdOutput;
@@ -29,11 +30,9 @@ namespace Spp {
       }
     }
 
-    internal Value Variables {
-      get {
-        return _variables;
-      }
-    }
+    internal Value Variables { get { return _variables; } }
+
+    internal Value Using { get { return _using; } set { _using = value; } }
 
     internal void Reset () {
       if (_writer != null) {
@@ -41,6 +40,7 @@ namespace Spp {
         _writer = null;
       }
       _variables = new Map();
+      _using = null;
       CdInput = Path.GetFullPath(".");
       CdOutput = Path.GetFullPath(".");
     }
@@ -160,6 +160,7 @@ namespace Spp {
         _writer = null;
       }
       _variables = null;
+      _using = null;
     }
   }
 }

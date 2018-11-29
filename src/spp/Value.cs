@@ -33,7 +33,9 @@ namespace Spp {
 
     internal override Value Evaluate (Compiler compiler) { return this; }
 
-    internal virtual Value Copy () { return this; }
+    internal virtual bool Has (Value key) {
+      return false;
+    }
 
     internal virtual int AsInt () {
       throw new CompileException("Expected an integer.", _position);
