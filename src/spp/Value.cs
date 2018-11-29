@@ -32,6 +32,8 @@ namespace Spp {
 
     internal virtual bool IsKeyValue { get { return false; } }
 
+    internal virtual bool IsEmpty { get { return false; } }
+
     internal override Value Evaluate (Compiler compiler) { return this; }
 
     internal static Value New (bool payload) { return new Bool(payload); }

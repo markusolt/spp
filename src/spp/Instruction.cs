@@ -23,6 +23,7 @@ namespace Spp {
       {new Signature("get",       2), new Instruction(_get,       2)},
       {new Signature("if",        2), new Instruction(_if,        2)},
       {new Signature("input",     1), new Instruction(_input,     1)},
+      {new Signature("isnull",    2), new Instruction(_isnull,    2)},
       {new Signature("let",       2), new Instruction(_let,       2)},
       {new Signature("loadtext",  1), new Instruction(_loadText,  1)},
       {new Signature("loadvalue", 1), new Instruction(_loadValue, 1)},
@@ -134,6 +135,10 @@ namespace Spp {
 
       compiler.CdInput = oldCdInput;
       return Value.Empty;
+    }
+
+    private static Value _isnull (Compiler compiler, Value v1, Value v2) {
+      return v1.IsEmpty ? v2 : v1;
     }
 
     private static Value _loadValue (Compiler compiler, Value v1, Value v2) {

@@ -12,5 +12,7 @@ namespace Spp.Data {
       writer.Write("null");
       return writer;
     }
+
+    internal override bool IsEmpty { get { return true; } }
   }
 }
