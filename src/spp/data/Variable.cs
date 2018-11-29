@@ -46,6 +46,8 @@ namespace Spp.Data {
 
       if (node == null && _isNullable) {
         node = Value.Empty;
+        node.Position = _position;
+        return node;
       }
 
       if (node == null) {
@@ -65,13 +67,13 @@ namespace Spp.Data {
         if (!isNullable) {
           throw new CompileException("Unkown member \"" + _key + "\".", _position);
         }
-        node = Value.Empty;
+        return Value.Empty;
       } else {
         node = node[_key];
       }
 
       if (_next != null) {
-        node = _next._evaluate(compiler, node, isNullable);
+        return _next._evaluate(compiler, node, isNullable);
       }
 
       return node;
