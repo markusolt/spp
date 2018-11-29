@@ -9,7 +9,7 @@ namespace Spp {
 
     internal static readonly Parser<Expression> KeywordParser = new ParseToken<Expression>("variable", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _keywordParser);
     internal static readonly Parser<Expression> GroupedParser = new ParseToken<Expression>("(", "(", _groupedParser);
-    internal static readonly Parser<Expression> ExpressionParser = new ParseGroup<Expression>("value", new Parser<Expression>[] {GroupedParser, KeywordParser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
+    internal static readonly Parser<Expression> ExpressionParser = new ParseGroup<Expression>("expression", new Parser<Expression>[] {GroupedParser, KeywordParser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
 
     protected Expression () {
       _position = default(Position);
