@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Spp.IO;
@@ -8,8 +9,7 @@ namespace Spp {
   internal class Compiler : IDisposable {
     private StringBuilder _buffer;
     private TextWriter _writer;
-    private Value _variables;
-    private Value _using;
+    private List<Value> _variables;
 
     internal string CdInput;
     internal string CdOutput;
@@ -30,17 +30,15 @@ namespace Spp {
       }
     }
 
-    internal Value Variables { get { return _variables; } }
-
-    internal Value Using { get { return _using; } set { _using = value; } }
+    internal List<Value> Variables { get { return _variables; } }
 
     internal void Reset () {
       if (_writer != null) {
         _writer.Dispose();
         _writer = null;
       }
-      _variables = Value.NewContainer();
-      _using = null;
+      _variables = new List<Value>();
+      _variables.Add(Value.NewContainer());
       CdInput = Path.GetFullPath(".");
       CdOutput = Path.GetFullPath(".");
     }
@@ -160,7 +158,6 @@ namespace Spp {
         _writer = null;
       }
       _variables = null;
-      _using = null;
     }
   }
 }

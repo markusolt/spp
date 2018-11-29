@@ -21,16 +21,16 @@ namespace Spp.Data {
       _children = children;
     }
 
-    internal override Value this[Value key] {
+    internal override Value this[string key] {
       get {
         if (!Has(key)) {
-          throw new CompileException("Unkown member \"" + key.ToString() + "\".", key.Position);
+          throw new CompileException("Unkown member \"" + key + "\".", _position);
         }
 
-        return _children[key.AsString()];
+        return _children[key];
       }
       set {
-        _children[key.AsString()] = value;
+        _children[key] = value;
       }
     }
 
@@ -38,9 +38,7 @@ namespace Spp.Data {
 
     internal override bool IsKeyValue { get { return _children.ContainsKey("key") && _children["key"].IsString && _children.ContainsKey("value"); } }
 
-    internal override bool Has (Value key) {
-      return key.IsString && _children.ContainsKey(key.AsString());
-    }
+    internal override bool Has (string key) { return _children.ContainsKey(key); }
 
     internal override IEnumerable<Value> AsEnumerable () { return new EnumerationConverter<KeyValuePair<string, Value>, Value>(_children.GetEnumerator(), _enumerationConverter); }
 
@@ -54,7 +52,7 @@ namespace Spp.Data {
 
     internal override void Push (Value extension) {
       extension = extension.AsKeyValue();
-      _children[extension[new Text("key")].AsString()] = extension[new Text("value")];
+      _children[extension["key"].AsString()] = extension["value"];
     }
 
     internal override TextWriter Stringify (TextWriter writer, bool root) {

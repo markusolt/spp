@@ -112,7 +112,7 @@ namespace Spp {
     }
 
     private static Value _get (Compiler compiler, Value v1, Value v2) {
-      return v1[v2];
+      return v1[v2.AsString()];
     }
 
     private static Value _if (Compiler compiler, Expression[] nodes) {
@@ -185,15 +185,13 @@ namespace Spp {
     }
 
     private static Value _using (Compiler compiler, Expression[] nodes) {
-      Value oldUsing;
       Value result;
 
-      oldUsing = compiler.Using;
-      compiler.Using = nodes[0].Evaluate(compiler);
+      compiler.Variables.Add(nodes[0].Evaluate(compiler));
 
       result = nodes[1].Evaluate(compiler);
 
-      compiler.Using = oldUsing;
+      compiler.Variables.RemoveAt(compiler.Variables.Count - 1);
       return result;
     }
 

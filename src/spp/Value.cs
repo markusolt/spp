@@ -13,7 +13,7 @@ namespace Spp {
 
     protected Value (Position position) : base(position) {}
 
-    internal virtual Value this[Value key] {
+    internal virtual Value this[string key] {
       get {
         throw new CompileException("Object is not a collection.", _position);
       }
@@ -42,7 +42,7 @@ namespace Spp {
 
     internal static Value NewContainer () { return new Map(); }
 
-    internal virtual bool Has (Value key) {
+    internal virtual bool Has (string key) {
       return false;
     }
 

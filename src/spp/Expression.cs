@@ -11,7 +11,7 @@ namespace Spp {
 
     internal static readonly Parser<Expression> KeywordParser = new ParseToken<Expression>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _keywordParser);
     internal static readonly Parser<Expression> GroupedParser = new ParseToken<Expression>("(", _groupedParser);
-    internal static readonly Parser<Expression> ExpressionParser = new ParseGroup<Expression>(new Parser<Expression>[] {GroupedParser, KeywordParser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
+    internal static readonly Parser<Expression> ExpressionParser = new ParseGroup<Expression>(new Parser<Expression>[] {GroupedParser, KeywordParser, Variable.Parser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
 
     protected Expression () {
       _position = default(Position);
@@ -45,7 +45,6 @@ namespace Spp {
       Position undoPosition;
       List<Expression> args;
       Signature sig;
-      Variable current;
       Expression auto;
 
       position = reader.Position;
@@ -87,16 +86,7 @@ namespace Spp {
         return auto;
       }
 
-      current = new Variable(position, key, null);
-
-      if (reader.Match(".")) {
-        do {
-          reader.Read();
-          current = new Variable(position, reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789"), current);
-        } while (reader.Match("."));
-      }
-
-      return current;
+      return Variable.Parse(reader, position, key, false);
     }
 
     private static Expression _groupedParser (Reader reader) {
