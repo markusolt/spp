@@ -1,8 +1,0 @@
-# let .name "bob"
-# let .greet "hello $.name$."
-# let .foo {
-	"key": .greet
-}
-
-
-# warning .foo

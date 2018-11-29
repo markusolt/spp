@@ -1,9 +1,13 @@
 {
   "folders": [
     {
-      "path": "./source/",
-      "name": "source",
+      "path": "./src/",
+      "name": "src",
       "folder_exclude_patterns": ["bin", "obj"]
+    },
+    {
+      "path": "./demo/",
+      "name": "demo"
     }
   ],
   "build_systems": [
@@ -11,22 +15,28 @@
       "name": "Build Project",
       "target": "exec",
       "shell_cmd": "dotnet build",
-      "working_dir": "$project_path/source/",
+      "working_dir": "$project_path/src/",
       "file_regex": "^([^:]+)\\(([0-9]+),([0-9]+)\\): ([^\\n\\[]*)(?<! )"
     },
     {
       "name": "Run Project",
       "target": "exec",
-      "shell_cmd": "dotnet run demo/demo.spp",
-      "working_dir": "$project_path/source/",
+      "shell_cmd": "dotnet run ../demo/demo.spp",
+      "working_dir": "$project_path/src/",
       "file_regex": "^\"([^\"]+)\":([0-9]+):([0-9]+): (?:Error: |(?=Warning: ))([^\\n]+)"
     },
     {
       "name": "Publish Project",
       "target": "exec",
       "shell_cmd": "dotnet publish -c release -f netcoreapp2.0",
-      "working_dir": "$project_path/source/",
+      "working_dir": "$project_path/src/",
       "file_regex": "^([^:]+)\\(([0-9]+),([0-9]+)\\): ([^\\n\\[]*)(?<! )"
     },
+    {
+      "name": "Install Syntax",
+      "target": "exec",
+      "shell_cmd": "@echo off & for %f in (*.sublime-syntax) do copy \"%f\" \"%appdata%/Sublime Text 3/Packages/MyPackage/\" || exit 1",
+      "working_dir": "$project_path/src/"
+    }
   ]
 }
