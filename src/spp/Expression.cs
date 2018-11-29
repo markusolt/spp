@@ -29,6 +29,13 @@ namespace Spp {
 
     internal abstract Value Evaluate (Compiler compiler);
 
+    internal static void SkipWhitespace (Reader reader) {
+      do {
+        reader.Skip(" \t\n");
+        Compiler.SkipComment(reader);
+      } while (reader.Match("\n"));
+    }
+
     private static Expression _keywordParser (Reader reader) {
       Position position;
       string key;
@@ -48,16 +55,16 @@ namespace Spp {
       if (reader.Match("(")) {
         args = new List<Expression>();
         reader.Read();
-        _skipWhitespace(reader);
+        SkipWhitespace(reader);
 
         while(!reader.Match(")")) {
           args.Add(ExpressionParser.Parse(reader));
-          _skipWhitespace(reader);
+          SkipWhitespace(reader);
           if (reader.Match(")")) {
             break;
           }
           reader.Assert(',');
-          _skipWhitespace(reader);
+          SkipWhitespace(reader);
         }
         reader.Read();
 
@@ -99,13 +106,6 @@ namespace Spp {
       reader.Skip(" \t\n");
       reader.Assert(')');
       return res;
-    }
-
-    private static void _skipWhitespace (Reader reader) {
-      do {
-        reader.Skip(" \t\n");
-        Compiler.SkipComment(reader);
-      } while (reader.Match("\n"));
     }
   }
 }

@@ -13,22 +13,22 @@ namespace Spp {
     private bool _isAdvanced;
 
     internal static readonly Dictionary<Signature, Instruction> Instructions = new Dictionary<Signature, Instruction>() {
-      {new Signature("cdinput",  1), new Instruction(_cdinput,  1)},
-      {new Signature("cdoutput", 1), new Instruction(_cdoutput, 1)},
-      {new Signature("close",    0), new Instruction(_close,    0)},
-      {new Signature("error",    1), new Instruction(_error,    1)},
-      {new Signature("files",    1), new Instruction(_files,    1)},
-      {new Signature("for",      3), new Instruction(_for,      3)},
-      {new Signature("get",      2), new Instruction(_get,      2)},
-      {new Signature("if",       2), new Instruction(_if,       2)},
-      {new Signature("input",    1), new Instruction(_input,    1)},
-      {new Signature("let",      2), new Instruction(_let,      2)},
-      {new Signature("loadjson", 1), new Instruction(_loadJson, 1)},
-      {new Signature("loadtext", 1), new Instruction(_loadText, 1)},
-      {new Signature("not",      1), new Instruction(_not,      1)},
-      {new Signature("output",   1), new Instruction(_output,   1)},
-      {new Signature("push",     2), new Instruction(_push,     2)},
-      {new Signature("warn",     1), new Instruction(_warn,     1)}
+      {new Signature("cdinput",   1), new Instruction(_cdinput,   1)},
+      {new Signature("cdoutput",  1), new Instruction(_cdoutput,  1)},
+      {new Signature("close",     0), new Instruction(_close,     0)},
+      {new Signature("error",     1), new Instruction(_error,     1)},
+      {new Signature("files",     1), new Instruction(_files,     1)},
+      {new Signature("for",       3), new Instruction(_for,       3)},
+      {new Signature("get",       2), new Instruction(_get,       2)},
+      {new Signature("if",        2), new Instruction(_if,        2)},
+      {new Signature("input",     1), new Instruction(_input,     1)},
+      {new Signature("let",       2), new Instruction(_let,       2)},
+      {new Signature("loadtext",  1), new Instruction(_loadText,  1)},
+      {new Signature("loadvalue", 1), new Instruction(_loadValue, 1)},
+      {new Signature("not",       1), new Instruction(_not,       1)},
+      {new Signature("output",    1), new Instruction(_output,    1)},
+      {new Signature("push",      2), new Instruction(_push,      2)},
+      {new Signature("warn",      1), new Instruction(_warn,      1)}
     };
 
     private Instruction (Func<Compiler, Value, Value, Value> simpleFunction, int argumentCount) {
@@ -130,32 +130,22 @@ namespace Spp {
       return Value.Empty;
     }
 
-    private static Value _loadJson (Compiler compiler, Value v1, Value v2) {
+    private static Value _loadValue (Compiler compiler, Value v1, Value v2) {
       string filePath;
       Reader reader;
-      Position position;
       Value res;
 
       filePath = _resolveFile(compiler.CdInput, v1.AsString(), v1.Position, false);
 
       reader = new Reader(new StreamReader(filePath), filePath);
-      position = reader.Position;
-      switch (reader.Peek()) {
-        case '{': {
-          res = MapRecipe.Parser.Parse(reader).Evaluate(compiler);
-          reader.Dispose();
-          return res;
-        }
-        case '[': {
-          res = SequenceRecipe.Parser.Parse(reader).Evaluate(compiler);
-          reader.Dispose();
-          return res;
-        }
-        default: {
-          reader.Dispose();
-          throw new CompileException("Expected Json.", position);
-        }
-      }
+
+      Expression.SkipWhitespace(reader);
+      reader.Assert('#');
+      Expression.SkipWhitespace(reader);
+      res = Expression.ExpressionParser.Parse(reader).Evaluate(compiler);
+
+      reader.Dispose();
+      return res;
     }
 
     private static Value _loadText (Compiler compiler, Value v1, Value v2) {
