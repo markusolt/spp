@@ -135,12 +135,6 @@ namespace Spp {
             throw new CompileException("Unclosed quoted string.", pos);
           }
           case '$': {
-            if (reader.Match("$")) {
-              reader.Read();
-              buffer.Append('$');
-              break;
-            }
-
             if (buffer.Length > 0) {
               list.Add(new Text(rootPos, buffer.ToString()));
               buffer.Clear();

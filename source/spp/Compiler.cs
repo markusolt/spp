@@ -107,6 +107,12 @@ namespace Spp {
             return;
           }
           case '$': {
+            if (reader.Match("$")) {
+              reader.Read();
+              _writer.Write('$');
+              break;
+            }
+
             reader.Skip(" \t");
             ValueRecipe.ValueRecipeParser.Parse(reader).Evaluate(this).Stringify(_writer, true);
             break;
