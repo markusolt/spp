@@ -1,4 +1,4 @@
 *.sublime-workspace
 *.lnk
-source/bin/
-source/obj/
+src/bin/
+src/obj/
