@@ -40,7 +40,7 @@ namespace Spp {
       position = reader.Position;
       key = reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789");
 
-      reader.Skip(" \t");
+      reader.Skip(" \t"); // TODO: Undo this skip if no trailing paran found
 
       if (reader.Match("(")) {
         args = new List<Expression>();

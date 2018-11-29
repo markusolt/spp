@@ -84,6 +84,7 @@ namespace Spp {
           reader.Read();
           reader.Skip(" \t");
           Expression.ExpressionParser.Parse(reader).Evaluate(this);
+          // TODO: ensure end of line
           reader.Read();
           return;
         }
