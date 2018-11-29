@@ -7,7 +7,7 @@ using Spp;
 
 namespace Spp {
   internal class Instruction {
-    private Func<Compiler, ValueRecipe[], Value> _advancedFunction;
+    private Func<Compiler, Expression[], Value> _advancedFunction;
     private Func<Compiler, Value, Value, Value> _simpleFunction;
     private int _argumentCount;
     private bool _isAdvanced;
@@ -37,13 +37,13 @@ namespace Spp {
       _isAdvanced = false;
     }
 
-    private Instruction (Func<Compiler, ValueRecipe[], Value> advancedFunction, int argumentCount) {
+    private Instruction (Func<Compiler, Expression[], Value> advancedFunction, int argumentCount) {
       _advancedFunction = advancedFunction;
       _argumentCount = argumentCount;
       _isAdvanced = true;
     }
 
-    internal Value Invoke (Compiler compiler, ValueRecipe[] nodes) {
+    internal Value Invoke (Compiler compiler, Expression[] nodes) {
       Value v1;
       Value v2;
 
@@ -97,7 +97,7 @@ namespace Spp {
       return new Sequence(files);
     }
 
-    private static Value _for (Compiler compiler, ValueRecipe[] nodes) {
+    private static Value _for (Compiler compiler, Expression[] nodes) {
       foreach (Value step in nodes[1].Evaluate(compiler).AsEnumerable()) {
         nodes[0].AsVariable().Set(compiler, step);
         nodes[2].Evaluate(compiler);
@@ -109,7 +109,7 @@ namespace Spp {
       return v1[v2];
     }
 
-    private static Value _if (Compiler compiler, ValueRecipe[] nodes) {
+    private static Value _if (Compiler compiler, Expression[] nodes) {
       if (nodes[0].Evaluate(compiler).AsBool()) {
         return nodes[1].Evaluate(compiler);
       }
@@ -178,7 +178,7 @@ namespace Spp {
       return Value.Empty;
     }
 
-    private static Value _let (Compiler compiler, ValueRecipe[] nodes) {
+    private static Value _let (Compiler compiler, Expression[] nodes) {
       nodes[0].AsVariable().Set(compiler, nodes[1].Evaluate(compiler));
       return Value.Empty;
     }

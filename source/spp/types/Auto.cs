@@ -5,7 +5,7 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-  internal class Auto : ValueRecipe {
+  internal class Auto : Expression {
     private Value _payload;
 
     internal static readonly Dictionary<string, Auto> Autos = new Dictionary<string, Auto> {

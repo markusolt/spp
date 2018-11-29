@@ -4,18 +4,18 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-  internal abstract class ValueRecipe {
+  internal abstract class Expression {
     protected Position _position;
 
-    internal static readonly Parser<ValueRecipe> KeywordParser = new ParseToken<ValueRecipe>("variable", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _keywordParser);
-    internal static readonly Parser<ValueRecipe> GroupedParser = new ParseToken<ValueRecipe>("(", "(", _groupedParser);
-    internal static readonly Parser<ValueRecipe> ValueRecipeParser = new ParseGroup<ValueRecipe>("value", new Parser<ValueRecipe>[] {GroupedParser, KeywordParser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
+    internal static readonly Parser<Expression> KeywordParser = new ParseToken<Expression>("variable", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _keywordParser);
+    internal static readonly Parser<Expression> GroupedParser = new ParseToken<Expression>("(", "(", _groupedParser);
+    internal static readonly Parser<Expression> ExpressionParser = new ParseGroup<Expression>("value", new Parser<Expression>[] {GroupedParser, KeywordParser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
 
-    protected ValueRecipe () {
+    protected Expression () {
       _position = default(Position);
     }
 
-    protected ValueRecipe (Position position) {
+    protected Expression (Position position) {
       _position = position;
     }
 
@@ -29,13 +29,13 @@ namespace Spp {
 
     internal abstract Value Evaluate (Compiler compiler);
 
-    private static ValueRecipe _keywordParser (Reader reader) {
+    private static Expression _keywordParser (Reader reader) {
       Position position;
       string key;
-      List<ValueRecipe> args;
+      List<Expression> args;
       Signature sig;
       Variable current;
-      ValueRecipe auto;
+      Expression auto;
 
       position = reader.Position;
       key = reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789");
@@ -43,12 +43,12 @@ namespace Spp {
       reader.Skip(" \t");
 
       if (reader.Match("(")) {
-        args = new List<ValueRecipe>();
+        args = new List<Expression>();
         reader.Read();
         reader.Skip(" \t\n");
 
         while(!reader.Match(")")) {
-          args.Add(ValueRecipeParser.Parse(reader));
+          args.Add(ExpressionParser.Parse(reader));
           reader.Skip(" \t\n");
           if (reader.Match(")")) {
             break;
@@ -85,12 +85,12 @@ namespace Spp {
       return current;
     }
 
-    private static ValueRecipe _groupedParser (Reader reader) {
-      ValueRecipe res;
+    private static Expression _groupedParser (Reader reader) {
+      Expression res;
 
       reader.Read();
       reader.Skip(" \t\n");
-      res = ValueRecipeParser.Parse(reader);
+      res = ExpressionParser.Parse(reader);
       reader.Skip(" \t\n");
       reader.Assert(')');
       return res;

@@ -5,12 +5,12 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-  internal class MapRecipe : ValueRecipe {
-    private Dictionary<string, ValueRecipe> _children;
+  internal class MapRecipe : Expression {
+    private Dictionary<string, Expression> _children;
 
-    internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("object", "{", _parse);
+    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("object", "{", _parse);
 
-    internal MapRecipe (Position position, Dictionary<string, ValueRecipe> children) : base(position) {
+    internal MapRecipe (Position position, Dictionary<string, Expression> children) : base(position) {
       _children = children;
     }
 
@@ -18,15 +18,15 @@ namespace Spp {
       Dictionary<string, Value> evaluatedChildren;
 
       evaluatedChildren = new Dictionary<string, Value>();
-      foreach (KeyValuePair<string, ValueRecipe> entry in _children) {
+      foreach (KeyValuePair<string, Expression> entry in _children) {
         evaluatedChildren.Add(entry.Key, entry.Value.Evaluate(compiler));
       }
 
       return new Map(_position, evaluatedChildren);
     }
 
-    private static ValueRecipe _parse (Reader reader) {
-      Dictionary<string, ValueRecipe> children;
+    private static Expression _parse (Reader reader) {
+      Dictionary<string, Expression> children;
       string key;
       Position rootPosition;
       Position position;
@@ -34,7 +34,7 @@ namespace Spp {
 
       rootPosition = reader.Position;
       reader.Read();
-      children = new Dictionary<string, ValueRecipe>();
+      children = new Dictionary<string, Expression>();
       reader.Skip(" \t\n");
 
       if (reader.Match("}")) {
@@ -65,7 +65,7 @@ namespace Spp {
         reader.Assert(':');
         reader.Skip(" \t\n");
 
-        children.Add(key, ValueRecipe.ValueRecipeParser.Parse(reader));
+        children.Add(key, Expression.ExpressionParser.Parse(reader));
 
         reader.Skip(" \t\n");
         switch (reader.Peek()) {

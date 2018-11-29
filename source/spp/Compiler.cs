@@ -83,7 +83,7 @@ namespace Spp {
         case '#': {
           reader.Read();
           reader.Skip(" \t");
-          ValueRecipe.ValueRecipeParser.Parse(reader).Evaluate(this);
+          Expression.ExpressionParser.Parse(reader).Evaluate(this);
           reader.Read();
           return;
         }
@@ -114,7 +114,7 @@ namespace Spp {
             }
 
             reader.Skip(" \t");
-            ValueRecipe.ValueRecipeParser.Parse(reader).Evaluate(this).Stringify(_writer, true);
+            Expression.ExpressionParser.Parse(reader).Evaluate(this).Stringify(_writer, true);
             break;
           }
           default: {

@@ -9,7 +9,7 @@ namespace Spp {
   internal class Text : Value {
     private string _payload;
 
-    internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("string", "\"", _parse);
+    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("string", "\"", _parse);
 
     internal Text (string payload) {
       _payload = payload;
@@ -70,10 +70,10 @@ namespace Spp {
       return buffer;
     }
 
-    private static ValueRecipe _parse (Reader reader) {
+    private static Expression _parse (Reader reader) {
       StringBuilder buffer;
       char c;
-      List<ValueRecipe> list;
+      List<Expression> list;
       Position rootPos;
       Position pos;
 
@@ -82,7 +82,7 @@ namespace Spp {
 
       buffer = new StringBuilder();
       c = ' ';
-      list = new List<ValueRecipe>();
+      list = new List<Expression>();
 
       while (c != '"') {
         pos = reader.Position;
@@ -140,7 +140,7 @@ namespace Spp {
               buffer.Clear();
             }
             reader.Skip(" \t");
-            list.Add(ValueRecipe.ValueRecipeParser.Parse(reader));
+            list.Add(Expression.ExpressionParser.Parse(reader));
             break;
           }
           default: {

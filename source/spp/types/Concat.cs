@@ -4,10 +4,10 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-  internal class Concat : ValueRecipe {
-    private ValueRecipe[] _contents;
+  internal class Concat : Expression {
+    private Expression[] _contents;
 
-    internal Concat (Position position, ValueRecipe[] contents) : base(position) {
+    internal Concat (Position position, Expression[] contents) : base(position) {
       _contents = contents;
     }
 
@@ -15,7 +15,7 @@ namespace Spp {
       StringWriter writer;
 
       writer = new StringWriter();
-      foreach (ValueRecipe entry in _contents) {
+      foreach (Expression entry in _contents) {
         entry.Evaluate(compiler).Stringify(writer, true);
       }
       return new Text(_position, writer.ToString());

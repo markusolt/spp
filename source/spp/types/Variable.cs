@@ -4,7 +4,7 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-  internal class Variable : ValueRecipe {
+  internal class Variable : Expression {
     private Value _key;
     private Variable _parent;
 

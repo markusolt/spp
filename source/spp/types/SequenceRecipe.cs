@@ -5,12 +5,12 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-  internal class SequenceRecipe : ValueRecipe {
-    private List<ValueRecipe> _children;
+  internal class SequenceRecipe : Expression {
+    private List<Expression> _children;
 
-    internal static readonly Parser<ValueRecipe> Parser = new ParseToken<ValueRecipe>("array", "[", _parse);
+    internal static readonly Parser<Expression> Parser = new ParseToken<Expression>("array", "[", _parse);
 
-    internal SequenceRecipe (Position position, List<ValueRecipe> children) : base(position) {
+    internal SequenceRecipe (Position position, List<Expression> children) : base(position) {
       _children = children;
     }
 
@@ -18,20 +18,20 @@ namespace Spp {
       List<Value> evaluatedChildren;
 
       evaluatedChildren = new List<Value>(_children.Count);
-      foreach (ValueRecipe entry in _children) {
+      foreach (Expression entry in _children) {
         evaluatedChildren.Add(entry.Evaluate(compiler));
       }
 
       return new Sequence(_position, evaluatedChildren);
     }
 
-    private static ValueRecipe _parse (Reader reader) {
-      List<ValueRecipe> children;
+    private static Expression _parse (Reader reader) {
+      List<Expression> children;
       Position position;
 
       position = reader.Position;
       reader.Read();
-      children = new List<ValueRecipe>();
+      children = new List<Expression>();
       reader.Skip(" \t\n");
 
       if (reader.Match("]")) {
@@ -40,7 +40,7 @@ namespace Spp {
       }
 
       while (true) {
-        children.Add(ValueRecipe.ValueRecipeParser.Parse(reader));
+        children.Add(Expression.ExpressionParser.Parse(reader));
 
         reader.Skip(" \t\n");
         switch (reader.Peek()) {

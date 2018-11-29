@@ -5,7 +5,7 @@ using Spp.IO;
 using Spp;
 
 namespace Spp {
-  internal abstract class Value : ValueRecipe {
+  internal abstract class Value : Expression {
     internal static readonly Value Empty = new Empty();
 
     protected Value () {}
