@@ -33,7 +33,7 @@ namespace Spp {
       do {
         reader.Skip(" \t\n");
         Compiler.SkipComment(reader);
-      } while (reader.Match("\n"));
+      } while (reader.Match("\n") && !reader.EndOfReader);
     }
 
     private static Expression _keywordParser (Reader reader) {
