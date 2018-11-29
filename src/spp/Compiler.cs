@@ -73,6 +73,21 @@ namespace Spp {
       }
     }
 
+    internal static void SkipComment (Reader reader) {
+      string buffer;
+      Position position;
+
+      position = reader.Position;
+      buffer = reader.Consume(" \t");
+
+      if (reader.MatchWord("--")) {
+        reader.SkipUntil("\n");
+        return;
+      }
+
+      reader.Undo(buffer, position);
+    }
+
     private void _compileLine (Reader reader) {
       char c;
 
@@ -84,9 +99,18 @@ namespace Spp {
           reader.Read();
           reader.Skip(" \t");
           Expression.ExpressionParser.Parse(reader).Evaluate(this);
-          // TODO: ensure end of line
-          reader.Read();
+          reader.Skip(" \t");
+          SkipComment(reader);
+          reader.Assert('\n');
           return;
+        }
+        case '-': {
+          if (reader.MatchWord("--")) {
+            reader.SkipUntil("\n");
+            reader.Read();
+            return;
+          }
+          break;
         }
         case '\n': {
           reader.Read();

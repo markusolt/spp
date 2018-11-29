@@ -32,6 +32,8 @@ namespace Spp {
     private static Expression _keywordParser (Reader reader) {
       Position position;
       string key;
+      string undoBuffer;
+      Position undoPosition;
       List<Expression> args;
       Signature sig;
       Variable current;
@@ -40,21 +42,22 @@ namespace Spp {
       position = reader.Position;
       key = reader.Consume("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789");
 
-      reader.Skip(" \t"); // TODO: Undo this skip if no trailing paran found
+      undoPosition = reader.Position;
+      undoBuffer = reader.Consume(" \t");
 
       if (reader.Match("(")) {
         args = new List<Expression>();
         reader.Read();
-        reader.Skip(" \t\n");
+        _skipWhitespace(reader);
 
         while(!reader.Match(")")) {
           args.Add(ExpressionParser.Parse(reader));
-          reader.Skip(" \t\n");
+          _skipWhitespace(reader);
           if (reader.Match(")")) {
             break;
           }
           reader.Assert(',');
-          reader.Skip(" \t\n");
+          _skipWhitespace(reader);
         }
         reader.Read();
 
@@ -66,6 +69,8 @@ namespace Spp {
 
         return new Command(position, Instruction.Instructions[sig], args.ToArray());
       }
+
+      reader.Undo(undoBuffer, undoPosition);
 
       if (Auto.Autos.ContainsKey(key)) {
         auto = Auto.Autos[key];
@@ -94,6 +99,13 @@ namespace Spp {
       reader.Skip(" \t\n");
       reader.Assert(')');
       return res;
+    }
+
+    private static void _skipWhitespace (Reader reader) {
+      do {
+        reader.Skip(" \t\n");
+        Compiler.SkipComment(reader);
+      } while (reader.Match("\n"));
     }
   }
 }
