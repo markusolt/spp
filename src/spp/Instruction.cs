@@ -17,6 +17,7 @@ namespace Spp {
       {new Signature("cdinput",   1), new Instruction(_cdinput,   1)},
       {new Signature("cdoutput",  1), new Instruction(_cdoutput,  1)},
       {new Signature("close",     0), new Instruction(_close,     0)},
+      {new Signature("equals",    2), new Instruction(_equals,    2)},
       {new Signature("error",     1), new Instruction(_error,     1)},
       {new Signature("error",     2), new Instruction(_errorpos,  2)},
       {new Signature("files",     1), new Instruction(_files,     1)},
@@ -90,12 +91,19 @@ namespace Spp {
       return Value.Empty;
     }
 
+    private static Value _equals (Compiler compiler, Value v1, Value v2) {
+      return Value.New(v1.ToString() == v2.ToString());
+    }
+
     private static Value _error (Compiler compiler, Value v1, Value v2) {
       throw new CompileException(v1.ToString(), v1.Position);
     }
 
     private static Value _errorpos (Compiler compiler, Value v1, Value v2) {
-      throw new CompileException(v1.ToString(), v2.FirstPosition);
+      string message;
+
+      message = v1.AsString();
+      throw new CompileException(message, v2.FirstPosition, new CompileException(message, v1.Position));
     }
 
     private static Value _files (Compiler compiler, Value v1, Value v2) {
