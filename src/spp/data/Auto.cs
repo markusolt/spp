@@ -12,7 +12,8 @@ namespace Spp.Data {
     internal static readonly Dictionary<string, Auto> Autos = new Dictionary<string, Auto> {
       { "this",  new Auto(_this)  },
       { "true",  new Auto(_true)  },
-      { "false", new Auto(_false) }
+      { "false", new Auto(_false) },
+      { "null",  new Auto(_null)  }
     };
 
     internal Auto (Func<Compiler, Position, Value> function) {
@@ -37,6 +38,10 @@ namespace Spp.Data {
 
     private static Value _false (Compiler compiler, Position position) {
       return new Bool(position, false);
+    }
+
+    private static Value _null (Compiler compiler, Position position) {
+      return new Empty(position);
     }
   }
 }
