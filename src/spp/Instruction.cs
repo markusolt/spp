@@ -137,7 +137,7 @@ namespace Spp {
       }
 
       if (nodes[2] != null) {
-        return nodes[1].Evaluate(compiler);
+        return nodes[2].Evaluate(compiler);
       }
 
       return Value.Empty;
