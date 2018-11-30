@@ -18,6 +18,7 @@ namespace Spp {
       {new Signature("cdoutput",  1), new Instruction(_cdoutput,  1)},
       {new Signature("close",     0), new Instruction(_close,     0)},
       {new Signature("error",     1), new Instruction(_error,     1)},
+      {new Signature("error",     2), new Instruction(_errorpos,  2)},
       {new Signature("files",     1), new Instruction(_files,     1)},
       {new Signature("for",       3), new Instruction(_for,       3)},
       {new Signature("get",       2), new Instruction(_get,       2)},
@@ -91,6 +92,10 @@ namespace Spp {
 
     private static Value _error (Compiler compiler, Value v1, Value v2) {
       throw new CompileException(v1.ToString(), v1.Position);
+    }
+
+    private static Value _errorpos (Compiler compiler, Value v1, Value v2) {
+      throw new CompileException(v1.ToString(), v2.FirstPosition);
     }
 
     private static Value _files (Compiler compiler, Value v1, Value v2) {
