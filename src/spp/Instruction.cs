@@ -92,11 +92,11 @@ namespace Spp {
     }
 
     private static Value _equals (Compiler compiler, Value v1, Value v2) {
-      return Value.New(v1.ToString() == v2.ToString());
+      return Value.New(v1.ToString(false) == v2.ToString(false));
     }
 
     private static Value _error (Compiler compiler, Value v1, Value v2) {
-      throw new CompileException(v1.ToString(), v1.Position);
+      throw new CompileException(v1.ToString(true), v1.Position);
     }
 
     private static Value _errorpos (Compiler compiler, Value v1, Value v2) {
@@ -217,7 +217,7 @@ namespace Spp {
     }
 
     private static Value _warn (Compiler compiler, Value v1, Value v2) {
-      Console.WriteLine(v1.Position.ToString() + ": Warning: " + v1.ToString());
+      Console.WriteLine(v1.Position.ToString() + ": Warning: " + v1.ToString(true));
       return Value.Empty;
     }
 

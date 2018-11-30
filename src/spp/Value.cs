@@ -75,7 +75,11 @@ namespace Spp {
     internal abstract TextWriter Stringify (TextWriter buffer, bool root);
 
     public override string ToString () {
-      return Stringify(new StringWriter(), true).ToString();
+      return ToString(false);
+    }
+
+    public string ToString (bool root) {
+      return Stringify(new StringWriter(), root).ToString();
     }
   }
 }
