@@ -24,7 +24,9 @@ namespace Spp {
       {new Signature("for",       3), new Instruction(_for,       3)},
       {new Signature("get",       2), new Instruction(_get,       2)},
       {new Signature("if",        2), new Instruction(_if,        2)},
+      {new Signature("if",        3), new Instruction(_if,        3)},
       {new Signature("input",     1), new Instruction(_input,     1)},
+      {new Signature("isnull",    1), new Instruction(_isnull,    1)},
       {new Signature("isnull",    2), new Instruction(_isnull,    2)},
       {new Signature("let",       2), new Instruction(_let,       2)},
       {new Signature("loadtext",  1), new Instruction(_loadText,  1)},
@@ -133,6 +135,11 @@ namespace Spp {
       if (nodes[0].Evaluate(compiler).AsBool()) {
         return nodes[1].Evaluate(compiler);
       }
+
+      if (nodes[2] != null) {
+        return nodes[1].Evaluate(compiler);
+      }
+
       return Value.Empty;
     }
 
@@ -154,6 +161,11 @@ namespace Spp {
       Value v1;
 
       v1 = nodes[0].Evaluate(compiler);
+
+      if (nodes.Length == 1) {
+        return Value.New(v1.IsEmpty);
+      }
+
       return v1.IsEmpty ? nodes[1].Evaluate(compiler) : v1;
     }
 
