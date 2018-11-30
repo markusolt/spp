@@ -40,16 +40,7 @@ namespace Spp {
       }
     }
 
-    internal Position FirstPosition {
-      get {
-        return _firstPosition;
-      }
-      set {
-        _position = value;
-        _firstPosition = value;
-        _missingPosition = false;
-      }
-    }
+    internal Position FirstPosition { get { return _firstPosition; } }
 
     internal virtual Variable AsVariable () {
       throw new CompileException("Expected a variable identifier.", _position);

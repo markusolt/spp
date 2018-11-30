@@ -7,20 +7,36 @@ using Spp.Data;
 
 namespace Spp.Data {
   internal class Auto : Expression {
-    private Value _payload;
+    private Func<Compiler, Position, Value> _function;
 
     internal static readonly Dictionary<string, Auto> Autos = new Dictionary<string, Auto> {
-      { "true",  new Auto(new Bool(true))  },
-      { "false", new Auto(new Bool(false)) }
+      { "this",  new Auto(_this)  },
+      { "true",  new Auto(_true)  },
+      { "false", new Auto(_false) }
     };
 
-    internal Auto (Value payload) {
-      _payload = payload;
+    internal Auto (Func<Compiler, Position, Value> function) {
+      _function = function;
     }
 
     internal override Value Evaluate (Compiler compiler) {
-      _payload.FirstPosition = _position;
-      return _payload;
+      return _function(compiler, _position);
+    }
+
+    private static Value _this (Compiler compiler, Position position) {
+      Value v;
+
+      v = compiler.Variables[compiler.Variables.Count - 1];
+      v.Position = position;
+      return v;
+    }
+
+    private static Value _true (Compiler compiler, Position position) {
+      return new Bool(position, true);
+    }
+
+    private static Value _false (Compiler compiler, Position position) {
+      return new Bool(position, false);
     }
   }
 }
