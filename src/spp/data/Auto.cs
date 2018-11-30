@@ -19,7 +19,7 @@ namespace Spp.Data {
     }
 
     internal override Value Evaluate (Compiler compiler) {
-      _payload.Position = _position;
+      _payload.FirstPosition = _position;
       return _payload;
     }
   }

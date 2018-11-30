@@ -8,22 +8,48 @@ using Spp;
 namespace Spp {
   internal abstract class Expression {
     protected Position _position;
+    protected Position _firstPosition;
+    private bool _missingPosition;
 
     internal static readonly Parser<Expression> KeywordParser = new ParseToken<Expression>("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", _keywordParser);
     internal static readonly Parser<Expression> GroupedParser = new ParseToken<Expression>("(", _groupedParser);
     internal static readonly Parser<Expression> ExpressionParser = new ParseGroup<Expression>(new Parser<Expression>[] {GroupedParser, KeywordParser, Variable.Parser, Num.Parser, Text.Parser, MapRecipe.Parser, SequenceRecipe.Parser});
 
     protected Expression () {
-      _position = default(Position);
+      _missingPosition = true;
     }
 
     protected Expression (Position position) {
       _position = position;
+      _firstPosition = position;
+      _missingPosition = false;
     }
 
     internal virtual bool IsVariable { get { return false; } }
 
-    internal Position Position { get { return _position; } set { _position = value; } }
+    internal Position Position {
+      get {
+        return _position;
+      }
+      set {
+        if (_missingPosition) {
+          _missingPosition = false;
+          _firstPosition = value;
+        }
+        _position = value;
+      }
+    }
+
+    internal Position FirstPosition {
+      get {
+        return _firstPosition;
+      }
+      set {
+        _position = value;
+        _firstPosition = value;
+        _missingPosition = false;
+      }
+    }
 
     internal virtual Variable AsVariable () {
       throw new CompileException("Expected a variable identifier.", _position);
