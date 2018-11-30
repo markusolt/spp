@@ -137,8 +137,11 @@ namespace Spp {
       return Value.Empty;
     }
 
-    private static Value _isnull (Compiler compiler, Value v1, Value v2) {
-      return v1.IsEmpty ? v2 : v1;
+    private static Value _isnull (Compiler compiler, Expression[] nodes) {
+      Value v1;
+
+      v1 = nodes[0].Evaluate(compiler);
+      return v1.IsEmpty ? nodes[1].Evaluate(compiler) : v1;
     }
 
     private static Value _loadValue (Compiler compiler, Value v1, Value v2) {
