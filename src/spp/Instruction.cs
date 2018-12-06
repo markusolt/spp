@@ -35,7 +35,8 @@ namespace Spp {
       {new Signature("output",    1), new Instruction(_output,    1)},
       {new Signature("push",      2), new Instruction(_push,      2)},
       {new Signature("using",     2), new Instruction(_using,     2)},
-      {new Signature("warn",      1), new Instruction(_warn,      1)}
+      {new Signature("warn",      1), new Instruction(_warn,      1)},
+      {new Signature("write",     1), new Instruction(_write,     1)}
     };
 
     private Instruction (Func<Compiler, Value, Value, Value> simpleFunction, int argumentCount) {
@@ -230,6 +231,11 @@ namespace Spp {
 
     private static Value _warn (Compiler compiler, Value v1, Value v2) {
       Console.WriteLine(v1.Position.ToString() + ": Warning: " + v1.ToString(true));
+      return Value.Empty;
+    }
+
+    private static Value _write (Compiler compiler, Value v1, Value v2) {
+      compiler.Write(v1);
       return Value.Empty;
     }
 

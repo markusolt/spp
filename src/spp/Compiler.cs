@@ -152,6 +152,14 @@ namespace Spp {
       }
     }
 
+    internal void Write (Value v) {
+      if (_writer == null) {
+        throw new CompileException("No open output file.", v.Position);
+      }
+
+      v.Stringify(_writer, true);
+    }
+
     public void Dispose () {
       if (_writer != null) {
         _writer.Dispose();
