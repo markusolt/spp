@@ -28,7 +28,7 @@
     {
       "name": "Publish Project",
       "target": "exec",
-      "shell_cmd": "dotnet publish -c release -f netcoreapp2.0",
+      "shell_cmd": "dotnet publish -c release -f netcoreapp3.0",
       "working_dir": "$project_path/src/",
       "file_regex": "^([^:]+)\\(([0-9]+),([0-9]+)\\): ([^\\n\\[]*)(?<! )"
     },
