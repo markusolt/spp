@@ -10,10 +10,10 @@ namespace Spp.Data {
     private Func<Compiler, Position, Value> _function;
 
     internal static readonly Dictionary<string, Auto> Autos = new Dictionary<string, Auto> {
-      { "this",  new Auto(_this)  },
-      { "true",  new Auto(_true)  },
       { "false", new Auto(_false) },
-      { "null",  new Auto(_null)  }
+      { "null",  new Auto(_null)  },
+      { "this",  new Auto(_this)  },
+      { "true",  new Auto(_true)  }
     };
 
     internal Auto (Func<Compiler, Position, Value> function) {
