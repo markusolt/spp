@@ -1,163 +1,297 @@
 %YAML 1.2
----
-name: spp
-file_extensions: [spp]
-scope: source.spp
-contexts:
-  main:
-    - match: '(?>^[ \t]*)#'
-      scope: keyword.operator.instruction.begin.spp
-      set:
-        - instruction
-        - value
-    - match: '(?>[ \t]*)--'
-      scope: punctuation.definition.comment.spp
-      push: comment_line
-    - match: '\$\$'
-      scope: constant.character.escape.spp
-    - match: '\$'
-      scope: keyword.operator.insert.spp
-      push: value
-  value:
-    - include: comment
-    - match: '(?=\))'
-      pop: true
-    - match: '(?=})'
-      pop: true
-    - match: '(?=])'
-      pop: true
-    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*(?=[ \t]*\()'
-      scope: variable.function.spp
-      set: arguments
-    - match: '(?i)(this|null|true|false)'
-      scope: constant.language.spp
-      pop: true
-    - match: \?
-      scope: keyword.operator.nullable.spp
-      set: variable
-    - include: variable
-    - match: '[0-9]+'
-      scope: constant.numeric.integer.decimal.spp
-      pop: true
-    - match: '"'
-      scope: punctuation.definition.string.begin.spp
-      set: string
-    - match: '{'
-      scope: punctuation.section.object.begin.spp
-      set:
-        - object
-        - value
-        - assign
-        - key
-    - match: '\['
-      scope: punctuation.section.array.begin.spp
-      set:
-        - array
-        - value
-    - match: \(
-      scope: punctuation.section.group.begin.spp
-      set:
-        - group
-        - value
-  instruction:
-    - match: '$'
-      pop: true
-    - match: '[ \t]+'
-    - match: '.'
-      scope: invalid.illegal
-  member_list:
-    - match: \.
-      scope: punctuation.accessor.dot.spp
-      push: member
-    - match: ''
-      pop: true
-  member:
-    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
-      scope: variable.parameter.spp
-      pop: true
-    - match: '[^a-zA-Z_]+'
-      scope: invalid.illegal.missing-member.spp
-  string:
-    - meta_content_scope: string.quoted.double.spp
-    - match: '"'
-      scope: punctuation.definition.string.end.spp
-      pop: true
-    - match: '\$'
-      scope: keyword.operator.insert.spp
-      push: value
-    - match: '\\(r|n|\\|\$|"|/|t|f)'
-      scope: constant.character.escape.spp
-    - match: '\\.?'
-      scope: invalid.illegal.escape
-    - match: '\n'
-      scope: invalid.illegal.unclosed-string
-      pop: true
-  key:
-    - match: '(?=})'
-      pop: true
-    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
-      scope: string.quoted.double.spp
-      pop: true
-    - match: '"[a-zA-Z_](?>[a-zA-Z_\-0-9]*)"'
-      scope: string.quoted.double.spp
-      pop: true
-  assign:
-    - match: '(?=})'
-      pop: true
-    - match: ':'
-      scope: punctuation.seperator.key-value.spp
-      pop: true
-  object:
-    - meta_content_scope: meta.group.object.spp
-    - match: '}'
-      scope: punctuation.section.object.end.spp
-      pop: true
-    - match: ','
-      scope: punctuation.seperator.object-element.spp
-      push:
-        - value
-        - assign
-        - key
-  array:
-    - meta_content_scope: meta.group.array.spp
-    - match: ']'
-      scope: punctuation.section.array.end.spp
-      pop: true
-    - match: ','
-      scope: punctuation.seperator.array-element.spp
-      push: value
-  group:
-    - meta_content_scope: meta.group.spp
-    - include: comment
-    - match: \)
-      scope: punctuation.section.group.end.spp
-      pop: true
-  arguments:
-    - match: \(
-      scope: punctuation.section.group.begin.spp
-      set:
-        - arguments_list
-        - value
-  arguments_list:
-    - meta_content_scope: meta.arguments.spp
-    - include: comment
-    - match: ','
-      push: value
-    - match: \)
-      scope: punctuation.section.group.end.spp
-      pop: true
-  variable:
-    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*(?=\.)'
-      scope: variable.parameter.spp
-      set: member_list
-    - match: '[a-zA-Z_][a-zA-Z_\-0-9]*'
-      scope: variable.parameter.spp
-      pop: true
-  comment:
-    - match: '--'
-      scope: punctuation.definition.comment.spp
-      push: comment_line
-  comment_line:
-    - meta_content_scope: comment.line.spp
-    - match: '$'
-      pop: true
+{
+  "name": "spp",
+  "file_extensions": [
+    "spp"
+  ],
+  "scope": "source.spp",
+  "contexts": {
+    "main": [
+      {
+        "match": "(?>^[ \\t]*)#",
+        "scope": "keyword.operator.instruction.begin.spp",
+        "set": [
+          "instruction",
+          "value"
+        ]
+      },
+      {
+        "match": "(?>[ \\t]*)--",
+        "scope": "punctuation.definition.comment.spp",
+        "push": "comment_line"
+      },
+      {
+        "match": "\\$\\$",
+        "scope": "constant.character.escape.spp"
+      },
+      {
+        "match": "\\$",
+        "scope": "keyword.operator.insert.spp",
+        "push": "value"
+      }
+    ],
+    "value": [
+      {
+        "include": "comment"
+      },
+      {
+        "match": "(?=\\))",
+        "pop": true
+      },
+      {
+        "match": "(?=})",
+        "pop": true
+      },
+      {
+        "match": "(?=])",
+        "pop": true
+      },
+      {
+        "match": "[a-zA-Z_][a-zA-Z_\\-0-9]*(?=[ \\t]*\\()",
+        "scope": "variable.function.spp",
+        "set": "arguments"
+      },
+      {
+        "match": "(?i)(this|null|true|false)",
+        "scope": "constant.language.spp",
+        "pop": true
+      },
+      {
+        "match": "\\?",
+        "scope": "keyword.operator.nullable.spp",
+        "set": "variable"
+      },
+      {
+        "include": "variable"
+      },
+      {
+        "match": "[0-9]+",
+        "scope": "constant.numeric.integer.decimal.spp",
+        "pop": true
+      },
+      {
+        "match": "\"",
+        "scope": "punctuation.definition.string.begin.spp",
+        "set": "string"
+      },
+      {
+        "match": "{",
+        "scope": "punctuation.section.object.begin.spp",
+        "set": [
+          "object",
+          "value",
+          "assign",
+          "key"
+        ]
+      },
+      {
+        "match": "\\[",
+        "scope": "punctuation.section.array.begin.spp",
+        "set": [
+          "array",
+          "value"
+        ]
+      },
+      {
+        "match": "\\(",
+        "scope": "punctuation.section.group.begin.spp",
+        "set": [
+          "group",
+          "value"
+        ]
+      }
+    ],
+    "instruction": [
+      {
+        "match": "$",
+        "pop": true
+      },
+      {
+        "match": "[ \\t]+"
+      },
+      {
+        "match": ".",
+        "scope": "invalid.illegal"
+      }
+    ],
+    "member_list": [
+      {
+        "match": "\\.",
+        "scope": "punctuation.accessor.dot.spp",
+        "push": "member"
+      },
+      {
+        "match": "",
+        "pop": true
+      }
+    ],
+    "member": [
+      {
+        "match": "[a-zA-Z_][a-zA-Z_\\-0-9]*",
+        "scope": "variable.parameter.spp",
+        "pop": true
+      },
+      {
+        "match": "[^a-zA-Z_]+",
+        "scope": "invalid.illegal.missing-member.spp"
+      }
+    ],
+    "string": [
+      {
+        "meta_content_scope": "string.quoted.double.spp"
+      },
+      {
+        "match": "\"",
+        "scope": "punctuation.definition.string.end.spp",
+        "pop": true
+      },
+      {
+        "match": "\\$",
+        "scope": "keyword.operator.insert.spp",
+        "push": "value"
+      },
+      {
+        "match": "\\\\(r|n|\\\\|\\$|\"|/|t|f)",
+        "scope": "constant.character.escape.spp"
+      },
+      {
+        "match": "\\\\.?",
+        "scope": "invalid.illegal.escape"
+      },
+      {
+        "match": "\\n",
+        "scope": "invalid.illegal.unclosed-string",
+        "pop": true
+      }
+    ],
+    "key": [
+      {
+        "match": "(?=})",
+        "pop": true
+      },
+      {
+        "match": "[a-zA-Z_][a-zA-Z_\\-0-9]*",
+        "scope": "string.quoted.double.spp",
+        "pop": true
+      },
+      {
+        "match": "\"[a-zA-Z_](?>[a-zA-Z_\\-0-9]*)\"",
+        "scope": "string.quoted.double.spp",
+        "pop": true
+      }
+    ],
+    "assign": [
+      {
+        "match": "(?=})",
+        "pop": true
+      },
+      {
+        "match": ":",
+        "scope": "punctuation.seperator.key-value.spp",
+        "pop": true
+      }
+    ],
+    "object": [
+      {
+        "meta_content_scope": "meta.group.object.spp"
+      },
+      {
+        "match": "}",
+        "scope": "punctuation.section.object.end.spp",
+        "pop": true
+      },
+      {
+        "match": ",",
+        "scope": "punctuation.seperator.object-element.spp",
+        "push": [
+          "value",
+          "assign",
+          "key"
+        ]
+      }
+    ],
+    "array": [
+      {
+        "meta_content_scope": "meta.group.array.spp"
+      },
+      {
+        "match": "]",
+        "scope": "punctuation.section.array.end.spp",
+        "pop": true
+      },
+      {
+        "match": ",",
+        "scope": "punctuation.seperator.array-element.spp",
+        "push": "value"
+      }
+    ],
+    "group": [
+      {
+        "meta_content_scope": "meta.group.spp"
+      },
+      {
+        "include": "comment"
+      },
+      {
+        "match": "\\)",
+        "scope": "punctuation.section.group.end.spp",
+        "pop": true
+      }
+    ],
+    "arguments": [
+      {
+        "match": "\\(",
+        "scope": "punctuation.section.group.begin.spp",
+        "set": [
+          "arguments_list",
+          "value"
+        ]
+      }
+    ],
+    "arguments_list": [
+      {
+        "meta_content_scope": "meta.arguments.spp"
+      },
+      {
+        "include": "comment"
+      },
+      {
+        "match": ",",
+        "push": "value"
+      },
+      {
+        "match": "\\)",
+        "scope": "punctuation.section.group.end.spp",
+        "pop": true
+      }
+    ],
+    "variable": [
+      {
+        "match": "[a-zA-Z_][a-zA-Z_\\-0-9]*(?=\\.)",
+        "scope": "variable.parameter.spp",
+        "set": "member_list"
+      },
+      {
+        "match": "[a-zA-Z_][a-zA-Z_\\-0-9]*",
+        "scope": "variable.parameter.spp",
+        "pop": true
+      }
+    ],
+    "comment": [
+      {
+        "match": "--",
+        "scope": "punctuation.definition.comment.spp",
+        "push": "comment_line"
+      }
+    ],
+    "comment_line": [
+      {
+        "meta_content_scope": "comment.line.spp"
+      },
+      {
+        "match": "$",
+        "pop": true
+      }
+    ]
+  }
+}

@@ -1,4 +1,6 @@
-*.sublime-workspace
-*.lnk
+# builds
 src/bin/
 src/obj/
+
+# sublime text
+*.sublime-workspace
